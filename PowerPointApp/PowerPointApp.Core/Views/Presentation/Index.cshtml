@@ -1,0 +1,32 @@
+﻿@{
+    ViewBag.Title = "Sunum Oluştur";
+}
+
+<h2>XML'den Sunum Oluştur</h2>
+
+<form method="post" asp-action="DownloadPptx" asp-controller="Presentation" target="_blank">
+    <div class="form-group">
+        <label for="xmlContent">Sunum XML İçeriği</label>
+        <textarea name="xmlContent" id="xmlContent" rows="20" class="form-control">
+<presentation>
+        <slide>
+        <title x="50" y="20" w="600" h="50">Başlık</title>
+        <body x="50" y="100" w="600" h="200">İçerik metni buraya.</body>
+  </slide>
+</presentation>
+        </textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">PowerPoint İndir</button>
+</form>
+
+<form method="post" asp-action="ViewPdf" asp-controller="Presentation" target="_blank" class="mt-3">
+    <input type="hidden" name="xmlContent" id="xmlContentHidden" />
+    <button type="submit" class="btn btn-success">PDF Olarak Görüntüle</button>
+</form>
+
+<script>
+    // İkinci formdaki hidden textarea'ya da aynı XML'i gönder
+    document.querySelector("form[action$='ViewPdf']").addEventListener("submit", function () {
+        document.getElementById("xmlContentHidden").value = document.getElementById("xmlContent").value;
+    });
+</script>
