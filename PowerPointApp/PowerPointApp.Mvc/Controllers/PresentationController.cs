@@ -14,29 +14,23 @@ namespace PowerPointApp.Mvc.Controllers
             return View();
         }
 
-
         [HttpPost]
+        [ValidateInput(false)] // <--- Zararlı olarak algılanabilecek karakterleri kabul et
         public ActionResult DownloadPptx(string xmlContent)
         {
-
-            if (string.IsNullOrWhiteSpace(xmlContent))
-            {
-                ViewBag.Error = "XML içeriği boş gönderildi.";
-                return View("Index");
-            }
-
-
             try
             {
-                var pptxBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-                return File(pptxBytes, "application/vnd.openxmlformats-officedocument.presentationml.presentation", "sunum.pptx");
+                var pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+                return File(pptBytes,
+                    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                    "Sunum.pptx");
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View("Index");
+                return Content("Hata oluştu: " + ex.Message);
             }
         }
+
 
         [HttpPost]
         [ValidateInput(false)]

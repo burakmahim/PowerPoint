@@ -1,23 +1,21 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml.Linq;
 using System.Text;
+using Syncfusion.Pdf;
 
-#if NET48
+#if !NET48
 using Syncfusion.Presentation;
 using Syncfusion.Drawing;
 using Syncfusion.PresentationToPdfConverter;
 using Syncfusion.OfficeChart;
 
-#elif NET9_0
+#elif !NET9_0
 using Syncfusion.Presentation;
 using Syncfusion.PresentationRenderer;
-using Syncfusion.PresentationToPdfConverter;
 using Syncfusion.OfficeChart;
-using Syncfusion.Pdf;
 #endif
 
 
@@ -136,26 +134,31 @@ namespace PowerPointLibrary
             }
         }
 
+
+
+
         public static byte[] ConvertToPdf(string xmlContent)
         {
             byte[] pptxBytes = CreatePresentationFromXml(xmlContent);
             using var ms = new MemoryStream(pptxBytes);
 
-            #if NET48
-                        using var pres = Presentation.Open(ms);
-                        // .NET 4.8 için tam nitelikli yol
-                        using var pdf = global::Syncfusion.PresentationToPdfConverter.PresentationToPdfConverter.Convert(pres);
-            #else // NET9_0
-                using var pres = Presentation.Open(ms);
-                // .NET 9 için yeni API
-                var converter = new global::Syncfusion.Presentation.PresentationToPdfConverter(pres);
-                using var pdf = converter.Convert();
-            #endif
+            #if !NET48
+                                    using (IPresentation presentation = Presentation.Open(ms))
+                                    {
+                                        PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
 
-            using var outMs = new MemoryStream();
-            pdf.Save(outMs);
-            return outMs.ToArray();
+                                        using MemoryStream outMs = new MemoryStream();
+                                        pdfDocument.Save(outMs);
+                                        return outMs.ToArray();
+                                    }
+            #elif !NET9_0
+                            throw new NotSupportedException(".NET 9.0 altında PDF'e dönüştürme desteklenmiyor.");
+            #else
+                            throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
+            #endif
         }
+
+
 
         #region Yardımcı Metodlar
 
