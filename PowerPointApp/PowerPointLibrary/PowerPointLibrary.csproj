@@ -34,7 +34,7 @@
 
 	<!-- .NET Framework 4.8 için referanslar -->
 
-	
+
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 		<Reference Include="Syncfusion.Compression.Base">
 			<HintPath>..\..\..\..\..\..\..\Program Files (x86)\Syncfusion\Essential Studio\Windows\30.1.37\Assemblies\4.6.2\Syncfusion.Compression.Base.dll</HintPath>
