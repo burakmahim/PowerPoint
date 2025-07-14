@@ -12,6 +12,17 @@ namespace PowerPointApp.Core.Controllers
             return View(); // Views/Presentation/Index.cshtml
         }
 
+
+        [HttpPost]
+        public IActionResult DownloadPptx(string xmlContent)
+        {
+            var pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+            return File(pptBytes,
+                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                "Sunum.pptx");
+        }
+
+
         [HttpPost]
         public ActionResult Generate(string xmlContent, string format)
         {

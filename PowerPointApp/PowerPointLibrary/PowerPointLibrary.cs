@@ -6,13 +6,13 @@ using System.Xml.Linq;
 using System.Text;
 using Syncfusion.Pdf;
 
-#if !NET48
+#if NET48
 using Syncfusion.Presentation;
 using Syncfusion.Drawing;
 using Syncfusion.PresentationToPdfConverter;
 using Syncfusion.OfficeChart;
 
-#elif !NET9_0
+#elif NET9_0
 using Syncfusion.Presentation;
 using Syncfusion.PresentationRenderer;
 using Syncfusion.OfficeChart;
@@ -142,7 +142,7 @@ namespace PowerPointLibrary
             byte[] pptxBytes = CreatePresentationFromXml(xmlContent);
             using var ms = new MemoryStream(pptxBytes);
 
-            #if !NET48
+            #if NET48
                                     using (IPresentation presentation = Presentation.Open(ms))
                                     {
                                         PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
@@ -151,7 +151,7 @@ namespace PowerPointLibrary
                                         pdfDocument.Save(outMs);
                                         return outMs.ToArray();
                                     }
-            #elif !NET9_0
+            #elif NET9_0
                             throw new NotSupportedException(".NET 9.0 altında PDF'e dönüştürme desteklenmiyor.");
             #else
                             throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
