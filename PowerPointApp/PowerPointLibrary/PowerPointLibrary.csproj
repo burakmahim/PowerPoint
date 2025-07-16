@@ -23,36 +23,36 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
-	<!-- .NET 9.0 için NuGet paketleri -->
+	 <!--.NET 9.0 için NuGet paketleri--> 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
-		<PackageReference Include="Syncfusion.Presentation.NET" Version="25.1.34" />
-		<PackageReference Include="Syncfusion.Pdf.NET" Version="25.1.34" />
-		<PackageReference Include="Syncfusion.Licensing" Version="25.1.34" />
-		<PackageReference Include="Syncfusion.PresentationRenderer.NET" Version="25.1.34" />
+		<PackageReference Include="Syncfusion.Presentation.NET" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Pdf.NET" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Licensing" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.PresentationRenderer.NET" Version="30.1.37" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
 	</ItemGroup>
 
-	<!-- .NET Framework 4.8 için referanslar -->
-
+	 <!--.NET Framework 4.8 için referanslar--> 
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 		<Reference Include="Syncfusion.Compression.Base">
-			<HintPath>..\..\..\..\..\..\..\Program Files (x86)\Syncfusion\Essential Studio\Windows\30.1.37\Assemblies\4.6.2\Syncfusion.Compression.Base.dll</HintPath>
+			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.Compression.Base.dll</HintPath>
 		</Reference>
 		<Reference Include="Syncfusion.Licensing">
-			<HintPath>..\..\..\..\..\..\..\Program Files (x86)\Syncfusion\Essential Studio\Windows\30.1.37\Assemblies\4.6.2\Syncfusion.Licensing.dll</HintPath>
+			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.Licensing.dll</HintPath>
 		</Reference>
 		<Reference Include="Syncfusion.OfficeChart.Base">
-			<HintPath>..\..\..\..\..\..\..\Program Files (x86)\Syncfusion\Essential Studio\Windows\30.1.37\Assemblies\4.6.2\Syncfusion.OfficeChart.Base.dll</HintPath>
+			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.OfficeChart.Base.dll</HintPath>
 		</Reference>
 		<Reference Include="Syncfusion.Pdf.Base">
-			<HintPath>..\..\..\..\..\..\..\Program Files (x86)\Syncfusion\Essential Studio\Windows\30.1.37\Assemblies\4.6.2\Syncfusion.Pdf.Base.dll</HintPath>
+			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.Pdf.Base.dll</HintPath>
 		</Reference>
 		<Reference Include="Syncfusion.Presentation.Base">
-			<HintPath>..\..\..\..\..\..\..\Program Files (x86)\Syncfusion\Essential Studio\Windows\30.1.37\Assemblies\4.6.2\Syncfusion.Presentation.Base.dll</HintPath>
+			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.Presentation.Base.dll</HintPath>
 		</Reference>
 		<Reference Include="Syncfusion.PresentationToPdfConverter.Base">
-			<HintPath>..\..\..\..\..\..\..\Program Files (x86)\Syncfusion\Essential Studio\Windows\30.1.37\Assemblies\4.6.2\Syncfusion.PresentationToPdfConverter.Base.dll</HintPath>
+			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.PresentationToPdfConverter.Base.dll</HintPath>
 		</Reference>
 	</ItemGroup>
+
 </Project>
