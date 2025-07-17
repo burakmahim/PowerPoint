@@ -42,6 +42,9 @@ namespace PowerPointLibrary
                     }
                 }
 
+                XElement? footerElement = document.Element("footer");
+
+
                 foreach (XElement slideElement in document.Elements("slide"))
                 {
                     SlideLayoutType slideLayoutType = Enum.TryParse(slideElement.Attribute("layout")?.Value, true, out SlideLayoutType lt) ? lt : SlideLayoutType.TitleAndContent;
@@ -125,6 +128,11 @@ namespace PowerPointLibrary
                         }
                     }
 
+                    if (footerElement != null)
+                    {
+                        AddFooter(document, slide);
+                    }
+
                     string? slideBackgroundColor = slideElement.Attribute("backgroundColor")?.Value;
                     if (slideBackgroundColor != null)
                     {
@@ -174,16 +182,9 @@ namespace PowerPointLibrary
                         AddShape(slide, text, shapeType, x, y, cx, cy, bold, italic, textColor, backgroundColor, fontSize, alignment);
                     }
 
-                    //XElement? chartElement = slideElement.Element("chart");
-                    //if(chartElement!= null)
-                    //{
-                    //    string chartTypeStr = chartElement.Attribute("type").Value;
-                    //    Chart chartType = Enum.TryParse(chartTypeStr, true, out ChartType ct) ? ct : ChartType.Pie;
-                    //}
-
                     Action<string, ListType> AddList = (tag, type) =>
                     {
-                        XElement el = slideElement.Element(tag);
+                        XElement? el = slideElement.Element(tag);
                         if (el != null)
                         {
                             IShape box = slide.AddTextBox(
@@ -297,7 +298,64 @@ namespace PowerPointLibrary
             }
         }
 
+        private static void AddFooter(XElement document, ISlide slide)
+        {
+            XElement? footerElement = document.Element("footer");
+            if (footerElement == null) return;
 
+            string? footerText = footerElement.Value;
+            if (string.IsNullOrWhiteSpace(footerText)) return;
+
+            slide.HeadersFooters.Footer.Text = footerText;
+            slide.HeadersFooters.Footer.Visible = true;
+
+            double x = (double.TryParse(footerElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1.27) * 28.3465;
+            double y = (double.TryParse(footerElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 19.05) * 28.3465;
+            double cx = (double.TryParse(footerElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 16.50) * 28.3465;
+            double cy = (double.TryParse(footerElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 0.63) * 28.3465;
+
+            IShape footerShape = slide.Shapes.AddTextBox(0, 0, 500, 500);
+            IParagraph paragraph = footerShape.TextBody.AddParagraph();
+            ITextPart textPart = paragraph.AddTextPart();
+            textPart.Text = footerText;
+        }
+
+
+        //private static void AddChart(ISlide slide, XElement chartElement)
+        //{
+        //    string? chartTypeStr = chartElement.Attribute("type")?.Value;
+        //    if (string.IsNullOrWhiteSpace(chartTypeStr))
+        //    {
+        //        throw new Exception("Chart için 'type' niteliği zorunludur ve boş olamaz.");
+        //    }
+
+        //    double x = (double.TryParse(chartElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+        //    double y = (double.TryParse(chartElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
+        //    double cx = (double.TryParse(chartElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 15) * 28.3465;
+        //    double cy = (double.TryParse(chartElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 15) * 28.3465;
+
+        //    OfficeChartType chartType;
+
+        //    if (Enum.TryParse<OfficeChartType>(chartTypeStr, true, out var chartTypeParsed))
+        //    {
+        //        chartType = chartTypeParsed;
+
+        //        if (chartType == OfficeChartType.Pie)
+        //        {
+
+        //            IPresentationChart chart = slide.Charts.AddChart(x, y, cx, cy);
+        //            chart.ChartType = OfficeChartType.Pie;
+
+        //            chart.ChartTitle = chartElement.Attribute("title")?.Value;
+
+        //        }
+        //        else
+        //        {
+
+        //        }
+
+        //    }
+        //}
         private static void AddImage(ISlide slide, XElement imgElement, double x, double y, double cx, double cy)
         {
             string? imagePath = imgElement.Attribute("path")?.Value;
