@@ -135,10 +135,10 @@ namespace PowerPointLibrary
                     XElement? imageElement = slideElement.Element("image");
                     if(imageElement != null)
                     {
-                        double x = (double.TryParse(imageElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var dx) ? dx : 1) * 28.3465;
-                        double y = (double.TryParse(imageElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var dy) ? dy : 1) * 28.3465;
-                        double cx = (double.TryParse(imageElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var dw) ? dw : 5) * 28.3465;
-                        double cy = (double.TryParse(imageElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var dh) ? dh : 5) * 28.3465;
+                        double x = (double.TryParse(imageElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+                        double y = (double.TryParse(imageElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
+                        double cx = (double.TryParse(imageElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
+                        double cy = (double.TryParse(imageElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
 
                         AddImage(slide, imageElement, x, y, cx, cy);
                     }
@@ -155,19 +155,19 @@ namespace PowerPointLibrary
 
                         string? text = textboxElement.Value;
 
-                        double x  = (double.TryParse(textboxElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var dx) ? dx : 1) * 28.3465;
-                        double y  = (double.TryParse(textboxElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var dy) ? dy : 1) * 28.3465;
-                        double cx = (double.TryParse(textboxElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var dw) ? dw : 5) * 28.3465;
-                        double cy = (double.TryParse(textboxElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out var dh) ? dh : 5) * 28.3465;
+                        double x  = (double.TryParse(textboxElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+                        double y  = (double.TryParse(textboxElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
+                        double cx = (double.TryParse(textboxElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
+                        double cy = (double.TryParse(textboxElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
 
-                        AutoShapeType shapeType = Enum.TryParse<AutoShapeType>(textboxElement.Attribute("shapeType")?.Value ?? "Rectangle", true, out var st) ? st : AutoShapeType.Rectangle;
+                        AutoShapeType shapeType = Enum.TryParse<AutoShapeType>(textboxElement.Attribute("shapeType")?.Value ?? "Rectangle", true, out AutoShapeType st) ? st : AutoShapeType.Rectangle;
 
-                        bool bold    = bool.TryParse(textboxElement.Attribute("bold")?.Value, out var b) && b;
-                        bool italic  = bool.TryParse(textboxElement.Attribute("italic")?.Value, out var i) && i;
+                        bool bold    = bool.TryParse(textboxElement.Attribute("bold")?.Value, out bool b) && b;
+                        bool italic  = bool.TryParse(textboxElement.Attribute("italic")?.Value, out bool i) && i;
 
                         string? textColor       = textboxElement.Attribute("textColor")?.Value ?? "#000000";
                         string? backgroundColor = textboxElement.Attribute("backgroundColor")?.Value;
-                        int fontSize            = int.TryParse(textboxElement.Attribute("fontSize")?.Value, out var fs) ? fs : 12;
+                        int fontSize            = int.TryParse(textboxElement.Attribute("fontSize")?.Value, out int fs) ? fs : 12;
                        
                         HorizontalAlignmentType alignment = Enum.TryParse(textboxElement.Attribute("alignment")?.Value, true, out HorizontalAlignmentType align) ? align : HorizontalAlignmentType.Left;
 
@@ -192,7 +192,7 @@ namespace PowerPointLibrary
                                 (int?)el.Attribute("w") ?? 600,
                                 (int?)el.Attribute("h") ?? 100
                             );
-                            foreach (var li in el.Elements("li"))
+                            foreach (XElement li in el.Elements("li"))
                             {
                                 IParagraph p = box.TextBody.AddParagraph(li.Value);
                                 p.ListFormat.Type = type;
@@ -223,7 +223,7 @@ namespace PowerPointLibrary
         public static byte[] ConvertToPdf(string xmlContent)
         {
             byte[] pptxBytes = CreatePresentationFromXml(xmlContent);
-            using var ms = new MemoryStream(pptxBytes);
+            using MemoryStream ms = new MemoryStream(pptxBytes);
 
             #if NET48
                                     using (IPresentation presentation = Presentation.Open(ms))

@@ -20,7 +20,7 @@ namespace PowerPointApp.Mvc.Controllers
         {
             try
             {
-                var pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+                byte[] pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
                 return File(pptBytes,
                     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                     "Sunum.pptx");
@@ -45,7 +45,7 @@ namespace PowerPointApp.Mvc.Controllers
 
             try
             {
-                var pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
+                byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
                 return File(pdfBytes, "application/pdf");
             }
             catch (Exception ex)
@@ -65,7 +65,7 @@ namespace PowerPointApp.Mvc.Controllers
 
             try
             {
-                var pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+                byte[] pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
                 return File(pptBytes,
                             "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                             "presentation.pptx");
@@ -84,7 +84,7 @@ namespace PowerPointApp.Mvc.Controllers
 
             try
             {
-                var pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
+                byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
                 return File(pdfBytes, "application/pdf", "presentation.pdf");
             }
             catch (Exception ex)
