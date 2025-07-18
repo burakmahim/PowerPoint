@@ -20,6 +20,11 @@
         <button type="submit" class="btn btn-primary">PowerPoint Olarak İndir</button>
     </form>
 
+    <form method="post" action="/Presentation/DownloadExcelFromText">
+        <textarea name="excelText" rows="10" cols="50" placeholder="Ad,Soyad&#10;Ali,Veli&#10;Ayşe,Demir"></textarea><br />
+        <button type="submit">Excel Olarak İndir</button>
+    </form>
+
     <form id="pdfForm" method="post" action="/Presentation/ViewPdf" target="_blank">
         <input type="hidden" name="xmlContent" id="pdfXmlContent" />
         <button type="submit" class="btn btn-success mt-2">PDF Olarak Görüntüle</button>

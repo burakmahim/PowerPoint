@@ -31,6 +31,18 @@ namespace PowerPointApp.Mvc.Controllers
             }
         }
 
+        [HttpPost]
+        public ActionResult DownloadExcelFromText(string excelText)
+        {
+            if (string.IsNullOrWhiteSpace(excelText))
+                return new HttpStatusCodeResult(400, "Veri boş olamaz.");
+
+            byte[] excelFile = ExcelLibrary.CreateExcelFromText(excelText);
+            return File(excelFile,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "veriler.xlsx");
+        }
+
 
         [HttpPost]
         [ValidateInput(false)]
