@@ -20,7 +20,7 @@ namespace PowerPointApp.Mvc.Controllers
         {
             try
             {
-                byte[] pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+                byte[] pptBytes = PowerPointLibrary.PowerPointGenerator.CreatePresentationFromXml(xmlContent);
                 return File(pptBytes,
                     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                     "Sunum.pptx");
@@ -29,6 +29,18 @@ namespace PowerPointApp.Mvc.Controllers
             {
                 return Content("Hata oluştu: " + ex.Message);
             }
+        }
+
+        [HttpPost]
+        public ActionResult DownloadExcelFromText(string excelText)
+        {
+            if (string.IsNullOrWhiteSpace(excelText))
+                return new HttpStatusCodeResult(400, "Veri boş olamaz.");
+
+            byte[] excelFile = ExcelLibrary.CreateExcelFromText(excelText);
+            return File(excelFile,
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "veriler.xlsx");
         }
 
 
