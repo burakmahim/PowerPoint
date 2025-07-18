@@ -5,6 +5,8 @@ using System.Net;
 using System.Xml.Linq;
 using System.Text;
 using Syncfusion.Pdf;
+using System.Drawing;
+
 
 #if NET48
 using Syncfusion.Presentation;
@@ -155,13 +157,7 @@ namespace PowerPointLibrary
                     XElement? textboxElement = slideElement.Element("textbox");
                     if(textboxElement != null)
                     {
-
                         string? text = textboxElement.Value;
-
-                        double x  = (double.TryParse(textboxElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
-                        double y  = (double.TryParse(textboxElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
-                        double cx = (double.TryParse(textboxElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
-                        double cy = (double.TryParse(textboxElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
 
                         AutoShapeType shapeType = Enum.TryParse<AutoShapeType>(textboxElement.Attribute("shapeType")?.Value ?? "Rectangle", true, out AutoShapeType st) ? st : AutoShapeType.Rectangle;
 
@@ -174,7 +170,7 @@ namespace PowerPointLibrary
                        
                         HorizontalAlignmentType alignment = Enum.TryParse(textboxElement.Attribute("alignment")?.Value, true, out HorizontalAlignmentType align) ? align : HorizontalAlignmentType.Left;
 
-                        AddShape(slide, text, shapeType, x, y, cx, cy, bold, italic, textColor, backgroundColor, fontSize, alignment);
+                        AddShape(textboxElement, slide, text, shapeType, bold, italic, textColor, backgroundColor, fontSize, alignment);
                     }
 
                     Action<string, ListType> AddList = (tag, type) =>
@@ -250,9 +246,16 @@ namespace PowerPointLibrary
 
             return (ColorObject)ColorObject.FromArgb(r, g, b);
         }
-        private static void AddShape(ISlide slide, string text, AutoShapeType shapeType, double x, double y, double width, double height, bool bold = false, bool italic = false, string textColor = "#000000", string? backgroundColor = null, int fontSize = 12, HorizontalAlignmentType alignment = HorizontalAlignmentType.Left)
+        private static void AddShape(XElement textboxElement, ISlide slide, string text, AutoShapeType shapeType, bool bold = false, bool italic = false, string textColor = "#000000", string? backgroundColor = null, int fontSize = 12, HorizontalAlignmentType alignment = HorizontalAlignmentType.Left)
         {
-            IShape shape = slide.Shapes.AddShape( shapeType, x, y, width, height);
+            string? fontFamily = textboxElement.Attribute("fontFamily")?.Value;
+
+            double x = (double.TryParse(textboxElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+            double y = (double.TryParse(textboxElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
+            double cx = (double.TryParse(textboxElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
+            double cy = (double.TryParse(textboxElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
+
+            IShape shape = slide.Shapes.AddShape( shapeType, x, y, cx, cy);
             shape.Fill.FillType = FillType.None;
 
             IParagraph paragraph = shape.TextBody.AddParagraph(text);
@@ -260,8 +263,9 @@ namespace PowerPointLibrary
             paragraph.Font.Bold = bold;
             paragraph.Font.Italic = italic;
             paragraph.Font.FontSize = fontSize;
+            paragraph.Font.FontName = fontFamily;
+            paragraph.HorizontalAlignment = alignment;
             paragraph.Font.Color = ParseColor(textColor);
-
 
             if (backgroundColor != null)
             {
