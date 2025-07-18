@@ -1,19 +1,13 @@
-﻿<presentation>
+﻿<!--<presentation>
 
-	<settings masterBackgroundColor="#FFFFFF"></settings>
+	<settings masterBackgroundColor="#fbaed2" enableFooter ="false" enableSlideNumber="false"></settings>
+	<footer>© 2025 Tüm Hakları Saklıdır</footer>
 	
 	<slide layout ="default">
-		<!-- Yalnızca bu slayta özel arka plan ayarı -->
-		<background r="255" g="230" b="200" />
-		
-		<title x="50" y="20" w="500" h="60">Başlık 1</title>
-		<content x="50" y="100" w="600" h="100">Paragraf metni...</content>
-		
-		
+		<textbox shapeType="explosion1" backgroundColor ="#ff7f00">Explosion1 şekli</textbox>
 	</slide>
 
 	<slide>
-
 		<ol x="50" y="80" w="600" h="100">
 			<li>Birinci sıra</li>
 			<li>İkinci sıra</li>
@@ -25,10 +19,6 @@
 			<li>Madde 2</li>
 			<li>Madde 3</li>
 		</ul>
-		<img src="C:\Users\burak\OneDrive\Masaüstü\kod1\PowerPointApp\PowerPointLibrary\Img\PowerPointImg.png" x="50" y="310" w="300" h="200" />
-
-		<footer x="360" y="480" w="600" h="30">© 2025 Şirket Adı · Tüm Hakları Saklıdır</footer>
-
 	</slide>
 
 	<slide>
@@ -64,4 +54,37 @@
 
 
 
+</presentation>-->
+
+<presentation>
+	<settings enableFooter="true" enableSlideNumber ="true"/>
+
+	<footer>
+		© 2025 Tüm hakları saklıdır.
+	</footer>
+
+	<slide>
+		<title font="Arial" fontSize="32" color="#1E1E1E">Sunum Başlığı</title>
+		<subtitle font="Arial" fontSize="20" color="#666666">Alt Başlık Buraya Gelecek</subtitle>
+
+		<list font="Calibri" fontSize="16" color="#333333" type="bulleted" x="2" y="5" w="22" h="8">
+			<item>Genel Bilgiler</item>
+			<item color="#007ACC" font="Segoe UI" fontSize="18">Önemli Noktalar</item>
+			<item font="Verdana">Detaylar ve Açıklamalar</item>
+		</list>
+
+	</slide>
+
+	<slide>
+		<title font="Arial" size="28" color="#1E1E1E">İçindekiler</title>
+
+		<list type="numbered" font="Calibri" fontSize="16" color="#444444" x="2" y="4" w="22" h="10">
+			<item fontSize ="22">Giriş</item>
+			<item>Yöntemler</item>
+			<item>Bulgular</item>
+			<item>Sonuçlar</item>
+		</list>
+
+	</slide>
 </presentation>
+
