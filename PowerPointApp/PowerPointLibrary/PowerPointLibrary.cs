@@ -5,6 +5,8 @@ using System.Net;
 using System.Xml.Linq;
 using System.Text;
 using Syncfusion.Pdf;
+using System.Drawing;
+
 
 #if NET48
 using Syncfusion.Presentation;
@@ -27,91 +29,164 @@ namespace PowerPointLibrary
         {
             try
             {
-                var doc = XDocument.Parse(xmlContent);
-                using var ppt = Presentation.Create();
+                XElement document = XElement.Parse(xmlContent);
+                using IPresentation presentation = Presentation.Create();
 
-                var settings = doc.Root?.Element("settings");
+                XElement? settings = document.Element("settings");
                 if (settings != null)
                 {
-                    var masterBg = settings.Element("masterBackground");
-                    if (masterBg != null)
+                    string? masterBgColor = settings.Attribute("masterBackgroundColor")?.Value;
+                    if (masterBgColor != null)
                     {
-                        var master = ppt.Masters[0];
-                        master.Background.Fill.FillType = FillType.Solid;
-                        master.Background.Fill.SolidFill.Color = ParseColor(masterBg);
+                        IMasterSlide slideMaster = presentation.Masters[0];
+                        slideMaster.Background.Fill.FillType = FillType.Solid;
+                        slideMaster.Background.Fill.SolidFill.Color = ParseColor(masterBgColor);
                     }
                 }
 
-                foreach (var slideEl in doc.Root.Elements("slide"))
-                {
-                    var slide = ppt.Slides.Add(SlideLayoutType.Blank);
+                XElement? footerElement = document.Element("footer");
 
-                    var bg = slideEl.Element("background");
-                    if (bg != null)
+
+                foreach (XElement slideElement in document.Elements("slide"))
+                {
+                    SlideLayoutType slideLayoutType = Enum.TryParse(slideElement.Attribute("layout")?.Value, true, out SlideLayoutType lt) ? lt : SlideLayoutType.TitleAndContent;
+
+                    ISlide slide = presentation.Slides.Add(slideLayoutType);
+
+                    string? title        = slideElement.Element("title")?.Value;
+                    string? subtitle     = slideElement.Element("subtitle")?.Value;
+                    string? content      = slideElement.Element("content")?.Value;
+                    string? leftcontent  = slideElement.Element("leftcontent")?.Value;
+                    string? rightcontent = slideElement.Element("rightcontent")?.Value;
+
+                    foreach (IShape shape in slide.Shapes)
+                    {
+                        switch (slideLayoutType)
+                        {
+                            case SlideLayoutType.TitleAndContent:
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
+                                {
+                                    if (!string.IsNullOrEmpty(title))
+                                        shape.TextBody.AddParagraph(title);
+                                }
+                                else if (shape.PlaceholderFormat.Type == PlaceholderType.Body)
+                                {
+                                    if (!string.IsNullOrEmpty(content))
+                                        shape.TextBody.AddParagraph(content);
+                                }
+                                break;
+
+                            case SlideLayoutType.TitleOnly:
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
+                                {
+                                    if (!string.IsNullOrEmpty(title))
+                                        shape.TextBody.AddParagraph(title);
+                                }
+                                break;
+
+                            case SlideLayoutType.TwoContent:
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
+                                {
+                                    if (!string.IsNullOrEmpty(title))
+                                        shape.TextBody.AddParagraph(title);
+                                }
+                                else if (shape.PlaceholderFormat.Type == PlaceholderType.Body)
+                                {
+                                    if (!string.IsNullOrEmpty(leftcontent))
+                                        shape.TextBody.AddParagraph(leftcontent);
+                                    if (!string.IsNullOrEmpty(rightcontent))
+                                        shape.TextBody.AddParagraph(rightcontent);
+                                }
+                                break;
+
+                            case SlideLayoutType.SectionHeader:
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
+                                {
+                                    if (!string.IsNullOrEmpty(title))
+                                        shape.TextBody.AddParagraph(title);
+                                }
+                                else if (shape.PlaceholderFormat.Type == PlaceholderType.Subtitle)
+                                {
+                                    if (!string.IsNullOrEmpty(subtitle))
+                                        shape.TextBody.AddParagraph(subtitle);
+                                }
+                                break;
+
+                            case SlideLayoutType.Blank:
+                                break;
+
+                            default:
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
+                                {
+                                    if (!string.IsNullOrEmpty(title))
+                                        shape.TextBody.AddParagraph(title);
+                                }
+                                else if (shape.PlaceholderFormat.Type == PlaceholderType.Body)
+                                {
+                                    if (!string.IsNullOrEmpty(content))
+                                        shape.TextBody.AddParagraph(content);
+                                }
+                                break;
+                        }
+                    }
+
+                    if (footerElement != null)
+                    {
+                        AddFooter(document, slide);
+                    }
+
+                    string? slideBackgroundColor = slideElement.Attribute("backgroundColor")?.Value;
+                    if (slideBackgroundColor != null)
                     {
                         slide.Background.Fill.FillType = FillType.Solid;
-                        slide.Background.Fill.SolidFill.Color = ParseColor(bg);
+                        slide.Background.Fill.SolidFill.Color = ParseColor(slideBackgroundColor);
                     }
 
-                    var title = slideEl.Element("title");
-                    if (title != null)
+                    XElement? imageElement = slideElement.Element("image");
+                    if(imageElement != null)
+                    {                       
+                        AddImage(slide, imageElement);
+                    }
+
+                    XElement? tableElement = slideElement.Element("table");
+                    if (tableElement != null)
                     {
-                        AddTextBox(slide, title.Value,
-                            (int?)title.Attribute("x") ?? 50,
-                            (int?)title.Attribute("y") ?? 50,
-                            (int?)title.Attribute("w") ?? 600,
-                            (int?)title.Attribute("h") ?? 50,
-                            bold: true, fontSize: 24);
+                        AddTable(slide, tableElement);
                     }
 
-                    var body = slideEl.Element("body");
-                    if (body != null)
+                    XElement? textboxElement = slideElement.Element("textbox");
+                    if(textboxElement != null)
                     {
-                        AddTextBox(slide, body.Value,
-                            (int?)body.Attribute("x") ?? 50,
-                            (int?)body.Attribute("y") ?? 120,
-                            (int?)body.Attribute("w") ?? 600,
-                            (int?)body.Attribute("h") ?? 300);
+                        string? text = textboxElement.Value;
+
+                        AutoShapeType shapeType = Enum.TryParse<AutoShapeType>(textboxElement.Attribute("shapeType")?.Value ?? "Rectangle", true, out AutoShapeType st) ? st : AutoShapeType.Rectangle;
+
+                        bool bold    = bool.TryParse(textboxElement.Attribute("bold")?.Value, out bool b) && b;
+                        bool italic  = bool.TryParse(textboxElement.Attribute("italic")?.Value, out bool i) && i;
+
+                        string? textColor       = textboxElement.Attribute("textColor")?.Value ?? "#000000";
+                        string? backgroundColor = textboxElement.Attribute("backgroundColor")?.Value;
+                        int fontSize            = int.TryParse(textboxElement.Attribute("fontSize")?.Value, out int fs) ? fs : 12;
+                       
+                        HorizontalAlignmentType alignment = Enum.TryParse(textboxElement.Attribute("alignment")?.Value, true, out HorizontalAlignmentType align) ? align : HorizontalAlignmentType.Left;
+
+                        AddShape(textboxElement, slide, text, shapeType, bold, italic, textColor, backgroundColor, fontSize, alignment);
                     }
-
-                    var footer = slideEl.Element("footer");
-                    if (footer != null)
-                    {
-                        AddTextBox(slide, footer.Value,
-                            (int?)footer.Attribute("x") ?? 50,
-                            (int?)footer.Attribute("y") ?? 680,
-                            (int?)footer.Attribute("w") ?? 600,
-                            (int?)footer.Attribute("h") ?? 30,
-                            alignment: HorizontalAlignmentType.Center, fontSize: 12);
-                    }
-
-                    var table = slideEl.Element("table");
-                    if (table != null)
-                        AddTable(slide, table);
-
-                    //var videoEl = slides[i].Element("video");
-                    //if (videoEl != null)
-                    //    AddVideoPlaceholderImage(pres.Slides[i], videoEl);
-
-
-                    var img = slideEl.Element("img");
-                    if (img != null)
-                        AddImage(slide, img);
 
                     Action<string, ListType> AddList = (tag, type) =>
                     {
-                        var el = slideEl.Element(tag);
+                        XElement? el = slideElement.Element(tag);
                         if (el != null)
                         {
-                            var box = slide.AddTextBox(
+                            IShape box = slide.AddTextBox(
                                 (int?)el.Attribute("x") ?? 50,
                                 (int?)el.Attribute("y") ?? 220,
                                 (int?)el.Attribute("w") ?? 600,
                                 (int?)el.Attribute("h") ?? 100
                             );
-                            foreach (var li in el.Elements("li"))
+                            foreach (XElement li in el.Elements("li"))
                             {
-                                var p = box.TextBody.AddParagraph(li.Value);
+                                IParagraph p = box.TextBody.AddParagraph(li.Value);
                                 p.ListFormat.Type = type;
                                 if (type == ListType.Numbered)
                                     p.ListFormat.NumberStyle = NumberedListStyle.ArabicPeriod;
@@ -124,8 +199,8 @@ namespace PowerPointLibrary
                     AddList("ol", ListType.Numbered);
                 }
 
-                using var ms = new MemoryStream();
-                ppt.Save(ms);
+                using MemoryStream ms = new MemoryStream();
+                presentation.Save(ms);
                 return ms.ToArray();
             }
             catch (Exception ex)
@@ -140,7 +215,7 @@ namespace PowerPointLibrary
         public static byte[] ConvertToPdf(string xmlContent)
         {
             byte[] pptxBytes = CreatePresentationFromXml(xmlContent);
-            using var ms = new MemoryStream(pptxBytes);
+            using MemoryStream ms = new MemoryStream(pptxBytes);
 
             #if NET48
                     using (IPresentation presentation = Presentation.Open(ms))
@@ -160,37 +235,53 @@ namespace PowerPointLibrary
 
 
 
-        #region Yardımcı Metodlar
-
-        private static ColorObject ParseColor(XElement element)
+        private static ColorObject ParseColor(string hexColor)
         {
-            var r = byte.TryParse((string)element.Attribute("r"), out var rVal) ? rVal : (byte)255;
-            var g = byte.TryParse((string)element.Attribute("g"), out var gVal) ? gVal : (byte)255;
-            var b = byte.TryParse((string)element.Attribute("b"), out var bVal) ? bVal : (byte)255;
+            if (hexColor.StartsWith("#"))
+                hexColor = hexColor.Substring(1);
+
+            byte r = Convert.ToByte(hexColor.Substring(0, 2), 16);
+            byte g = Convert.ToByte(hexColor.Substring(2, 2), 16);
+            byte b = Convert.ToByte(hexColor.Substring(4, 2), 16);
 
             return (ColorObject)ColorObject.FromArgb(r, g, b);
         }
-
-
-        private static void AddTextBox(ISlide slide, string text, int x, int y, int width, int height,
-            bool bold = false, int fontSize = 12, HorizontalAlignmentType alignment = HorizontalAlignmentType.Left)
+        private static void AddShape(XElement textboxElement, ISlide slide, string text, AutoShapeType shapeType, bool bold = false, bool italic = false, string textColor = "#000000", string? backgroundColor = null, int fontSize = 12, HorizontalAlignmentType alignment = HorizontalAlignmentType.Left)
         {
-            var textBox = slide.AddTextBox(x, y, width, height);
-            var paragraph = textBox.TextBody.AddParagraph(text);
+            string? fontFamily = textboxElement.Attribute("fontFamily")?.Value;
+
+            double x = (double.TryParse(textboxElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+            double y = (double.TryParse(textboxElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
+            double cx = (double.TryParse(textboxElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
+            double cy = (double.TryParse(textboxElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
+
+            IShape shape = slide.Shapes.AddShape( shapeType, x, y, cx, cy);
+            shape.Fill.FillType = FillType.None;
+
+            IParagraph paragraph = shape.TextBody.AddParagraph(text);
             paragraph.HorizontalAlignment = alignment;
             paragraph.Font.Bold = bold;
+            paragraph.Font.Italic = italic;
             paragraph.Font.FontSize = fontSize;
-        }
+            paragraph.Font.FontName = fontFamily;
+            paragraph.HorizontalAlignment = alignment;
+            paragraph.Font.Color = ParseColor(textColor);
 
+            if (backgroundColor != null)
+            {
+                shape.Fill.FillType = FillType.Solid;
+                shape.Fill.SolidFill.Color = ParseColor(backgroundColor);
+            }
+        }
         private static void AddTable(ISlide slide, XElement tableElement)
         {
-            var rows = tableElement.Elements("tr").ToList();
+            List<XElement> rows = tableElement.Elements("tr").ToList();
             if (rows.Count == 0) return;
 
             int rowCount = rows.Count;
             int colCount = rows[0].Elements("td").Count();
 
-            var table = slide.Shapes.AddTable(rowCount, colCount,
+            ITable table = slide.Shapes.AddTable(rowCount, colCount,
                 (int?)tableElement.Attribute("x") ?? 50,
                 (int?)tableElement.Attribute("y") ?? 400,
                 (int?)tableElement.Attribute("w") ?? 600,
@@ -198,18 +289,43 @@ namespace PowerPointLibrary
 
             for (int r = 0; r < rowCount; r++)
             {
-                var cells = rows[r].Elements("td").ToList();
+                List<XElement> cells = rows[r].Elements("td").ToList();
                 for (int c = 0; c < colCount; c++)
                 {
                     table.Rows[r].Cells[c].TextBody.AddParagraph(c < cells.Count ? cells[c].Value : "");
                 }
             }
         }
+        private static void AddFooter(XElement document, ISlide slide)
+        {
+            XElement? footerElement = document.Element("footer");
+            if (footerElement == null) return;
 
+            string? footerText = footerElement.Value;
+            if (string.IsNullOrWhiteSpace(footerText)) return;
 
+            slide.HeadersFooters.Footer.Text = footerText;
+            slide.HeadersFooters.Footer.Visible = true;
+
+            double x = (double.TryParse(footerElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1.27) * 28.3465;
+            double y = (double.TryParse(footerElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 19.05) * 28.3465;
+            double cx = (double.TryParse(footerElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 16.50) * 28.3465;
+            double cy = (double.TryParse(footerElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 0.63) * 28.3465;
+
+            IShape footerShape = slide.Shapes.AddTextBox(0, 0, 500, 500);
+            IParagraph paragraph = footerShape.TextBody.AddParagraph();
+            ITextPart textPart = paragraph.AddTextPart();
+            textPart.Text = footerText;
+        }
         private static void AddImage(ISlide slide, XElement imgElement)
         {
-            var imagePath = imgElement.Attribute("src")?.Value ?? imgElement.Attribute("url")?.Value;
+            string? imagePath = imgElement.Attribute("path")?.Value;
+
+            double x = (double.TryParse(imgElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+            double y = (double.TryParse(imgElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
+            double cx = (double.TryParse(imgElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
+            double cy = (double.TryParse(imgElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
+
             if (string.IsNullOrWhiteSpace(imagePath)) return;
 
             try
@@ -218,32 +334,67 @@ namespace PowerPointLibrary
 
                 if (imagePath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 {
-                    using var webClient = new WebClient();
+                    using WebClient webClient = new WebClient();
                     imageBytes = webClient.DownloadData(imagePath);
                 }
                 else if (File.Exists(imagePath))
                 {
                     imageBytes = File.ReadAllBytes(imagePath);
                 }
+                else if(imagePath.StartsWith("data:"))
+                { 
+                    string base64data = imagePath.Substring(imagePath.IndexOf(",") + 1);
+                    imageBytes = Convert.FromBase64String(base64data);
+                }
                 else
                 {
                     return;
                 }
-
-                using var stream = new MemoryStream(imageBytes);
-                slide.Pictures.AddPicture(
-                    stream,
-                    (int?)imgElement.Attribute("x") ?? 50,
-                    (int?)imgElement.Attribute("y") ?? 200,
-                    (int?)imgElement.Attribute("w") ?? 300,
-                    (int?)imgElement.Attribute("h") ?? 200);
+                    using MemoryStream stream = new MemoryStream(imageBytes);
+                    slide.Pictures.AddPicture(stream, x, y, cx, cy);
             }
             catch
             {
                 // Hata durumunda sessizce devam et
             }
-        }
+        }     
 
-        #endregion
+        //private static void AddChart(ISlide slide, XElement chartElement)
+        //{
+        //    string? chartTypeStr = chartElement.Attribute("type")?.Value;
+        //    if (string.IsNullOrWhiteSpace(chartTypeStr))
+        //    {
+        //        throw new Exception("Chart için 'type' niteliği zorunludur ve boş olamaz.");
+        //    }
+
+        //    double x = (double.TryParse(chartElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+        //    double y = (double.TryParse(chartElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
+        //    double cx = (double.TryParse(chartElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 15) * 28.3465;
+        //    double cy = (double.TryParse(chartElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 15) * 28.3465;
+
+        //    OfficeChartType chartType;
+
+        //    if (Enum.TryParse<OfficeChartType>(chartTypeStr, true, out var chartTypeParsed))
+        //    {
+        //        chartType = chartTypeParsed;
+
+        //        if (chartType == OfficeChartType.Pie)
+        //        {
+
+        //            IPresentationChart chart = slide.Charts.AddChart(x, y, cx, cy);
+        //            chart.ChartType = OfficeChartType.Pie;
+
+        //            chart.ChartTitle = chartElement.Attribute("title")?.Value;
+
+        //        }
+        //        else
+        //        {
+
+        //        }
+
+        //    }
+        //}
+
+
     }
 }

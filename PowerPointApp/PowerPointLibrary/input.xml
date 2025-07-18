@@ -1,16 +1,13 @@
 ﻿<presentation>
 
-	<settings>
-		<!-- Tüm slaytlara uygulanacak arka plan rengi -->
-		<masterBackground r="240" g="248" b="255" />
-	</settings>
+	<settings masterBackgroundColor="#FFFFFF"></settings>
 	
-	<slide>
+	<slide layout ="default">
 		<!-- Yalnızca bu slayta özel arka plan ayarı -->
 		<background r="255" g="230" b="200" />
 		
 		<title x="50" y="20" w="500" h="60">Başlık 1</title>
-		<body x="50" y="100" w="600" h="100">Paragraf metni...</body>
+		<content x="50" y="100" w="600" h="100">Paragraf metni...</content>
 		
 		
 	</slide>
