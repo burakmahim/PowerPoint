@@ -10,11 +10,12 @@ namespace PowerPointLibrary
 {
     public static class ExcelLibrary
     {
-
-
-        public static byte[] CreateExcelFromText(string rawText)
+        public static byte[] CreateExcelFromText(string rawInput)
         {
         #if NET48 || NET9_0
+            if (string.IsNullOrWhiteSpace(rawInput))
+                throw new ArgumentException("Boş veri gönderildi.");
+
             using ExcelEngine excelEngine = new ExcelEngine();
             IApplication application = excelEngine.Excel;
             application.DefaultVersion = ExcelVersion.Excel2016;
@@ -22,14 +23,16 @@ namespace PowerPointLibrary
             IWorkbook workbook = application.Workbooks.Create(1);
             IWorksheet sheet = workbook.Worksheets[0];
 
-            // Verileri satır-satır ve hücre-hücre yaz
-            var lines = rawText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-            for (int i = 0; i < lines.Length; i++)
+            // Satırları al
+            string[] lines = rawInput.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int row = 0; row < lines.Length; row++)
             {
-                var cells = lines[i].Split(',');
-                for (int j = 0; j < cells.Length; j++)
+                string[] cells = lines[row].Split(',');
+
+                for (int col = 0; col < cells.Length; col++)
                 {
-                    sheet.Range[i + 1, j + 1].Text = cells[j].Trim();
+                    sheet.Range[row + 1, col + 1].Text = cells[col].Trim();
                 }
             }
 
@@ -40,6 +43,5 @@ namespace PowerPointLibrary
             throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
         #endif
         }
-
     }
 }

@@ -200,18 +200,18 @@ namespace PowerPointLibrary
             using MemoryStream ms = new MemoryStream(pptxBytes);
 
             #if NET48
-                                    using (IPresentation presentation = Presentation.Open(ms))
-                                    {
-                                        PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
+                    using (IPresentation presentation = Presentation.Open(ms))
+                    {
+                        PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
 
-                                        using MemoryStream outMs = new MemoryStream();
-                                        pdfDocument.Save(outMs);
-                                        return outMs.ToArray();
-                                    }
+                        using MemoryStream outMs = new MemoryStream();
+                        pdfDocument.Save(outMs);
+                        return outMs.ToArray();
+                    }
             #elif NET9_0
-                            throw new NotSupportedException(".NET 9.0 altında PDF'e dönüştürme desteklenmiyor.");
+                    throw new NotSupportedException(".NET 9.0 altında PDF'e dönüştürme desteklenmiyor.");
             #else
-                            throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
+                    throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
             #endif
         }
 
