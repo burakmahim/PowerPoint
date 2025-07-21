@@ -25,10 +25,7 @@
         <button type="submit" class="btn btn-success mt-2">PDF Olarak Görüntüle</button>
     </form>
 
-    <form method="post" action="/Presentation/DownloadExcelFromText">
-        <textarea name="excelText" rows="10" cols="50" placeholder="Ad,Soyad&#10;Ali,Veli&#10;Ayşe,Demir"></textarea><br />
-        <button type="submit">Excel Olarak İndir</button>
-    </form>
+
 
 
 
@@ -47,6 +44,73 @@
 &lt;/presentation&gt;
     </pre>
     </div>
+
+
+    @{
+        ViewBag.Title = "Excel Oluştur";
+    }
+
+    <h2>Excel Oluştur</h2>
+
+    @using (Html.BeginForm("GenerateExcelFromXml", "Presentation", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            <label for="xmlContent">Excel XML İçeriği</label>
+            <textarea name="xmlContent" rows="20" class="form-control" style="font-family: monospace;"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Excel Oluştur ve İndir</button>
+
+        <div class="mt-4">
+            <h6>📌 Örnek Excel XML (Tablo + Grafik):</h6>
+            <pre class="bg-light border p-3 rounded">
+&lt;excel&gt;
+  &lt;sheet name="Satış Verileri"&gt;
+
+    &lt;table startCell="A1"&gt;
+      &lt;row&gt;
+        &lt;cell bold="true"&gt;Ay&lt;/cell&gt;
+        &lt;cell bold="true"&gt;Elma&lt;/cell&gt;
+        &lt;cell bold="true"&gt;Armut&lt;/cell&gt;
+      &lt;/row&gt;
+      &lt;row&gt;
+        &lt;cell&gt;Ocak&lt;/cell&gt;
+        &lt;cell&gt;100&lt;/cell&gt;
+        &lt;cell&gt;80&lt;/cell&gt;
+      &lt;/row&gt;
+      &lt;row&gt;
+        &lt;cell&gt;Şubat&lt;/cell&gt;
+        &lt;cell&gt;120&lt;/cell&gt;
+        &lt;cell&gt;90&lt;/cell&gt;
+      &lt;/row&gt;
+      &lt;row&gt;
+        &lt;cell&gt;Mart&lt;/cell&gt;
+        &lt;cell&gt;140&lt;/cell&gt;
+        &lt;cell&gt;100&lt;/cell&gt;
+      &lt;/row&gt;
+    &lt;/table&gt;
+
+    &lt;chart type="Column" title="Satış Grafiği" xAxis="Ay" yAxis="Tutar"&gt;
+      &lt;series name="Elma"&gt;
+        &lt;point label="Ocak" value="100" /&gt;
+        &lt;point label="Şubat" value="120" /&gt;
+        &lt;point label="Mart" value="140" /&gt;
+      &lt;/series&gt;
+      &lt;series name="Armut"&gt;
+        &lt;point label="Ocak" value="80" /&gt;
+        &lt;point label="Şubat" value="90" /&gt;
+        &lt;point label="Mart" value="100" /&gt;
+      &lt;/series&gt;
+    &lt;/chart&gt;
+
+  &lt;/sheet&gt;
+&lt;/excel&gt;
+    </pre>
+        </div>
+    }
+
 
 
     <script>

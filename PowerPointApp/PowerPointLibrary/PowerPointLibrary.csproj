@@ -9,11 +9,11 @@
 
 	<!-- Platforma özel sabitler -->
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
-		<DefineConstants>NET48</DefineConstants>
+		 <DefineConstants>NET48</DefineConstants>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
-		<DefineConstants>NET9_0</DefineConstants>
+		 <DefineConstants>NET9_0</DefineConstants>
 	</PropertyGroup>
 
 	<!-- Gömülü input.xml -->
@@ -32,8 +32,7 @@
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
 	</ItemGroup>
 
-	 <!--.NET Framework 4.8 için referanslar--> 
-
+	<!-- .NET Framework 4.8 için referanslar -->
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
 		<Reference Include="Syncfusion.Compression.Base">
 			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.Compression.Base.dll</HintPath>
