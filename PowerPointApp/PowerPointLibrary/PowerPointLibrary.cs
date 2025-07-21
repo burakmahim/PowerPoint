@@ -56,10 +56,10 @@ namespace PowerPointLibrary
 
                     ISlide slide = presentation.Slides.Add(slideLayoutType);
 
-                    string? title        = slideElement.Element("title")?.Value;
-                    string? subtitle     = slideElement.Element("subtitle")?.Value;
-                    string? content      = slideElement.Element("content")?.Value;
-                    string? leftcontent  = slideElement.Element("leftcontent")?.Value;
+                    string? title = slideElement.Element("title")?.Value;
+                    string? subtitle = slideElement.Element("subtitle")?.Value;
+                    string? content = slideElement.Element("content")?.Value;
+                    string? leftcontent = slideElement.Element("leftcontent")?.Value;
                     string? rightcontent = slideElement.Element("rightcontent")?.Value;
 
                     int bodyCounter = 0;
@@ -141,10 +141,10 @@ namespace PowerPointLibrary
                         slide.Background.Fill.SolidFill.Color = ParseColor(slideBackgroundColor);
                     }
 
-                    IEnumerable <XElement> imageElements = slideElement.Elements("image");
-                    if(imageElements != null)
+                    IEnumerable<XElement> imageElements = slideElement.Elements("image");
+                    if (imageElements != null)
                     {
-                        foreach(XElement imgElement in imageElements)
+                        foreach (XElement imgElement in imageElements)
                         {
                             AddImage(slide, imgElement);
                         }
@@ -160,9 +160,9 @@ namespace PowerPointLibrary
                     }
 
                     IEnumerable<XElement> shapeElements = slideElement.Elements("shape");
-                    if(shapeElements != null)
+                    if (shapeElements != null)
                     {
-                        foreach(XElement shapeElement in shapeElements)
+                        foreach (XElement shapeElement in shapeElements)
                         {
                             string? text = shapeElement.Value;
 
@@ -182,9 +182,9 @@ namespace PowerPointLibrary
                     }
 
                     IEnumerable<XElement> listElements = slideElement.Elements("list");
-                    if(listElements != null)
+                    if (listElements != null)
                     {
-                        foreach(XElement listElement in listElements)
+                        foreach (XElement listElement in listElements)
                         {
                             AddList(listElement, slide);
                         }
@@ -209,20 +209,20 @@ namespace PowerPointLibrary
             byte[] pptxBytes = CreatePresentationFromXml(xmlContent);
             using MemoryStream ms = new MemoryStream(pptxBytes);
 
-            #if NET48
-                    using (IPresentation presentation = Presentation.Open(ms))
-                    {
-                        PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
+#if NET48
+            using (IPresentation presentation = Presentation.Open(ms))
+            {
+                PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
 
-                        using MemoryStream outMs = new MemoryStream();
-                        pdfDocument.Save(outMs);
-                        return outMs.ToArray();
-                    }
-            #elif NET9_0
+                using MemoryStream outMs = new MemoryStream();
+                pdfDocument.Save(outMs);
+                return outMs.ToArray();
+            }
+#elif NET9_0
                     throw new NotSupportedException(".NET 9.0 altında PDF'e dönüştürme desteklenmiyor.");
-            #else
+#else
                     throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
-            #endif
+#endif
         }
 
 
@@ -247,7 +247,7 @@ namespace PowerPointLibrary
             double cx = (double.TryParse(shapeElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
             double cy = (double.TryParse(shapeElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
 
-            IShape shape = slide.Shapes.AddShape( shapeType, x, y, cx, cy);
+            IShape shape = slide.Shapes.AddShape(shapeType, x, y, cx, cy);
             shape.Fill.FillType = FillType.None;
 
             IParagraph paragraph = shape.TextBody.AddParagraph(text);
@@ -267,7 +267,7 @@ namespace PowerPointLibrary
                 shape.Fill.SolidFill.Color = ParseColor(backgroundColor);
             }
 
-           //eererereerererer
+            //eererereerererer
 
 
 
@@ -352,7 +352,7 @@ namespace PowerPointLibrary
 
             bool enableSlideNumber = bool.TryParse(document.Element("settings")?.Attribute("slideNumber")?.Value, out bool resultNumber) && resultNumber;
 
-            slide.HeadersFooters.SlideNumber.Visible = enableSlideNumber ;
+            slide.HeadersFooters.SlideNumber.Visible = enableSlideNumber;
 
             double x = (double.TryParse(footerElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
             double y = (double.TryParse(footerElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 12.5) * 28.3465;
@@ -384,8 +384,8 @@ namespace PowerPointLibrary
                 {
                     imageBytes = File.ReadAllBytes(imagePath);
                 }
-                else if(imagePath.StartsWith("data:"))
-                { 
+                else if (imagePath.StartsWith("data:"))
+                {
                     string base64data = imagePath.Substring(imagePath.IndexOf(",") + 1);
                     imageBytes = Convert.FromBase64String(base64data);
                 }
@@ -393,14 +393,14 @@ namespace PowerPointLibrary
                 {
                     return;
                 }
-                    using MemoryStream stream = new MemoryStream(imageBytes);
-                    slide.Pictures.AddPicture(stream, x, y, cx, cy);
+                using MemoryStream stream = new MemoryStream(imageBytes);
+                slide.Pictures.AddPicture(stream, x, y, cx, cy);
             }
             catch
             {
                 // Hata durumunda sessizce devam et
             }
-        }     
+        }
 
         //private static void AddChart(ISlide slide, XElement chartElement)
         //{
