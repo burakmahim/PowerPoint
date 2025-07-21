@@ -267,7 +267,10 @@ namespace PowerPointLibrary
                 shape.Fill.SolidFill.Color = ParseColor(backgroundColor);
             }
 
-           
+           //eererereerererer
+
+
+
 
         }
         private static void AddText()
