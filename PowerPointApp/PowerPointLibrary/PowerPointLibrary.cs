@@ -6,6 +6,7 @@ using System.Xml.Linq;
 using System.Text;
 using Syncfusion.Pdf;
 using System.Drawing;
+using System.Security.Policy;
 
 
 #if NET48
@@ -132,7 +133,7 @@ namespace PowerPointLibrary
 
                     if (footerElement != null)
                     {
-                        AddFooter(document, slide);
+                        SetHeaderFooter(document, slide);
                     }
 
                     string? slideBackgroundColor = slideElement.Attribute("backgroundColor")?.Value;
@@ -173,30 +174,11 @@ namespace PowerPointLibrary
                         AddShape(textboxElement, slide, text, shapeType, bold, italic, textColor, backgroundColor, fontSize, alignment);
                     }
 
-                    Action<string, ListType> AddList = (tag, type) =>
+                    XElement? listElement = slideElement.Element("list");
+                    if(listElement != null)
                     {
-                        XElement? el = slideElement.Element(tag);
-                        if (el != null)
-                        {
-                            IShape box = slide.AddTextBox(
-                                (int?)el.Attribute("x") ?? 50,
-                                (int?)el.Attribute("y") ?? 220,
-                                (int?)el.Attribute("w") ?? 600,
-                                (int?)el.Attribute("h") ?? 100
-                            );
-                            foreach (XElement li in el.Elements("li"))
-                            {
-                                IParagraph p = box.TextBody.AddParagraph(li.Value);
-                                p.ListFormat.Type = type;
-                                if (type == ListType.Numbered)
-                                    p.ListFormat.NumberStyle = NumberedListStyle.ArabicPeriod;
-                                p.FirstLineIndent = -20;
-                                p.LeftIndent = 20;
-                            }
-                        }
-                    };
-                    AddList("ul", ListType.Bulleted);
-                    AddList("ol", ListType.Numbered);
+                        AddList(listElement, slide);
+                    }
                 }
 
                 using MemoryStream ms = new MemoryStream();
@@ -296,26 +278,65 @@ namespace PowerPointLibrary
                 }
             }
         }
-        private static void AddFooter(XElement document, ISlide slide)
+        private static void AddList(XElement listElement, ISlide slide)
+        {
+
+            double x = (double.TryParse(listElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+            double y = (double.TryParse(listElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
+            double cx = (double.TryParse(listElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
+            double cy = (double.TryParse(listElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
+
+            bool bold = bool.TryParse(listElement.Attribute("bold")?.Value, out bool b) && b;
+            bool italic = bool.TryParse(listElement.Attribute("italic")?.Value, out bool i) && i;
+
+            string listFontFamily = listElement.Attribute("font")?.Value ?? "Calibri";
+            string listTextColor = listElement.Attribute("color")?.Value ?? "#000000";
+            string listFontSize = listElement.Attribute("size")?.Value ?? "14";
+            string listType = listElement.Attribute("type")?.Value ?? "bulleted";
+
+            ListType listTypeParsed = Enum.TryParse<ListType>(listType, true, out var result) ? result : ListType.Bulleted;
+
+            int listFontSizeParsed = int.TryParse(listFontSize, out int s) ? s : 14;
+
+            IShape listBox = slide.AddTextBox(x, y, cx, cy);
+
+            foreach (XElement item in listElement.Elements("item"))
+            {
+                IParagraph paragraph = listBox.TextBody.AddParagraph(item.Value);
+                paragraph.ListFormat.Type = listTypeParsed;
+
+                string itemFontFamily = item.Attribute("fontFamily")?.Value ?? listFontFamily;
+                string itemTextColor = item.Attribute("color")?.Value ?? listTextColor;
+                string itemFontSize = item.Attribute("fontSize")?.Value ?? listFontSize;
+
+                int itemFontSizeParsed = int.Parse(itemFontSize);
+
+                paragraph.Font.FontName = itemFontFamily;
+                paragraph.Font.FontSize = itemFontSizeParsed;
+                paragraph.Font.Color = ParseColor(itemTextColor);
+            }
+
+        }
+        private static void SetHeaderFooter(XElement document, ISlide slide)
         {
             XElement? footerElement = document.Element("footer");
             if (footerElement == null) return;
 
+            bool enableFooter = bool.TryParse(document.Element("settings")?.Attribute("enableFooter")?.Value, out bool result) && result;
             string? footerText = footerElement.Value;
-            if (string.IsNullOrWhiteSpace(footerText)) return;
 
+            slide.HeadersFooters.Footer.Visible = enableFooter;
             slide.HeadersFooters.Footer.Text = footerText;
-            slide.HeadersFooters.Footer.Visible = true;
 
-            double x = (double.TryParse(footerElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1.27) * 28.3465;
-            double y = (double.TryParse(footerElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 19.05) * 28.3465;
-            double cx = (double.TryParse(footerElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 16.50) * 28.3465;
-            double cy = (double.TryParse(footerElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 0.63) * 28.3465;
+            bool enableSlideNumber = bool.TryParse(document.Element("settings")?.Attribute("enableSlideNumber")?.Value, out bool resultNumber) && resultNumber;
 
-            IShape footerShape = slide.Shapes.AddTextBox(0, 0, 500, 500);
-            IParagraph paragraph = footerShape.TextBody.AddParagraph();
-            ITextPart textPart = paragraph.AddTextPart();
-            textPart.Text = footerText;
+            slide.HeadersFooters.SlideNumber.Visible = enableSlideNumber ;
+
+            double x = (double.TryParse(footerElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+            double y = (double.TryParse(footerElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 12.5) * 28.3465;
+            double cx = (double.TryParse(footerElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 23) * 28.3465;
+            double cy = (double.TryParse(footerElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 1.2) * 28.3465;
+
         }
         private static void AddImage(ISlide slide, XElement imgElement)
         {
@@ -398,3 +419,29 @@ namespace PowerPointLibrary
 
     }
 }
+
+
+//Action<string, ListType> AddList = (tag, type) =>
+//{
+//    XElement? el = slideElement.Element(tag);
+//    if (el != null)
+//    {
+//        IShape box = slide.AddTextBox(
+//            (int?)el.Attribute("x") ?? 50,
+//            (int?)el.Attribute("y") ?? 220,
+//            (int?)el.Attribute("w") ?? 600,
+//            (int?)el.Attribute("h") ?? 100
+//        );
+//        foreach (XElement li in el.Elements("li"))
+//        {
+//            IParagraph p = box.TextBody.AddParagraph(li.Value);
+//            p.ListFormat.Type = type;
+//            if (type == ListType.Numbered)
+//                p.ListFormat.NumberStyle = NumberedListStyle.ArabicPeriod;
+//            p.FirstLineIndent = -20;
+//            p.LeftIndent = 20;
+//        }
+//    }
+//};
+//AddList("ul", ListType.Bulleted);
+//AddList("ol", ListType.Numbered);
