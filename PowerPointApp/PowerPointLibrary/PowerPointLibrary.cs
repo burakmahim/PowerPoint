@@ -7,6 +7,8 @@ using System.Text;
 using Syncfusion.Pdf;
 using System.Drawing;
 using System.Security.Policy;
+using System.Collections.Generic;
+
 
 
 #if NET48
@@ -60,56 +62,58 @@ namespace PowerPointLibrary
                     string? leftcontent  = slideElement.Element("leftcontent")?.Value;
                     string? rightcontent = slideElement.Element("rightcontent")?.Value;
 
+                    int bodyCounter = 0;
+
                     foreach (IShape shape in slide.Shapes)
                     {
                         switch (slideLayoutType)
                         {
                             case SlideLayoutType.TitleAndContent:
-                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
-                                {
-                                    if (!string.IsNullOrEmpty(title))
-                                        shape.TextBody.AddParagraph(title);
-                                }
-                                else if (shape.PlaceholderFormat.Type == PlaceholderType.Body)
-                                {
-                                    if (!string.IsNullOrEmpty(content))
-                                        shape.TextBody.AddParagraph(content);
-                                }
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title && !string.IsNullOrEmpty(title))
+                                    shape.TextBody.AddParagraph(title);
+                                else if (shape.PlaceholderFormat.Type == PlaceholderType.Body && !string.IsNullOrEmpty(content))
+                                    shape.TextBody.AddParagraph(content);
                                 break;
 
                             case SlideLayoutType.TitleOnly:
-                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
-                                {
-                                    if (!string.IsNullOrEmpty(title))
-                                        shape.TextBody.AddParagraph(title);
-                                }
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title && !string.IsNullOrEmpty(title))
+                                    shape.TextBody.AddParagraph(title);
                                 break;
 
                             case SlideLayoutType.TwoContent:
-                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title && !string.IsNullOrEmpty(title))
                                 {
-                                    if (!string.IsNullOrEmpty(title))
-                                        shape.TextBody.AddParagraph(title);
+                                    shape.TextBody.AddParagraph(title);
                                 }
                                 else if (shape.PlaceholderFormat.Type == PlaceholderType.Body)
                                 {
-                                    if (!string.IsNullOrEmpty(leftcontent))
-                                        shape.TextBody.AddParagraph(leftcontent);
-                                    if (!string.IsNullOrEmpty(rightcontent))
-                                        shape.TextBody.AddParagraph(rightcontent);
+                                    if (slideLayoutType == SlideLayoutType.TwoContent)
+                                    {
+                                        if (bodyCounter == 0 && !string.IsNullOrEmpty(leftcontent))
+                                            shape.TextBody.AddParagraph(leftcontent);
+                                        else if (bodyCounter == 1 && !string.IsNullOrEmpty(rightcontent))
+                                            shape.TextBody.AddParagraph(rightcontent);
+
+                                        bodyCounter++;
+                                    }
+                                    else if (!string.IsNullOrEmpty(content))
+                                    {
+                                        shape.TextBody.AddParagraph(content);
+                                    }
                                 }
+
                                 break;
 
                             case SlideLayoutType.SectionHeader:
-                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title && !string.IsNullOrEmpty(title))
                                 {
-                                    if (!string.IsNullOrEmpty(title))
-                                        shape.TextBody.AddParagraph(title);
+                                    shape.TextBody.AddParagraph(title);
                                 }
-                                else if (shape.PlaceholderFormat.Type == PlaceholderType.Subtitle)
+                                else if ((shape.PlaceholderFormat.Type == PlaceholderType.Subtitle ||
+                                          shape.PlaceholderFormat.Type == PlaceholderType.Body) &&
+                                          !string.IsNullOrEmpty(subtitle))
                                 {
-                                    if (!string.IsNullOrEmpty(subtitle))
-                                        shape.TextBody.AddParagraph(subtitle);
+                                    shape.TextBody.AddParagraph(subtitle);
                                 }
                                 break;
 
@@ -117,16 +121,10 @@ namespace PowerPointLibrary
                                 break;
 
                             default:
-                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title)
-                                {
-                                    if (!string.IsNullOrEmpty(title))
-                                        shape.TextBody.AddParagraph(title);
-                                }
-                                else if (shape.PlaceholderFormat.Type == PlaceholderType.Body)
-                                {
-                                    if (!string.IsNullOrEmpty(content))
-                                        shape.TextBody.AddParagraph(content);
-                                }
+                                if (shape.PlaceholderFormat.Type == PlaceholderType.Title && !string.IsNullOrEmpty(title))
+                                    shape.TextBody.AddParagraph(title);
+                                else if (shape.PlaceholderFormat.Type == PlaceholderType.Body && !string.IsNullOrEmpty(content))
+                                    shape.TextBody.AddParagraph(content);
                                 break;
                         }
                     }
@@ -143,41 +141,53 @@ namespace PowerPointLibrary
                         slide.Background.Fill.SolidFill.Color = ParseColor(slideBackgroundColor);
                     }
 
-                    XElement? imageElement = slideElement.Element("image");
-                    if(imageElement != null)
-                    {                       
-                        AddImage(slide, imageElement);
+                    IEnumerable <XElement> imageElements = slideElement.Elements("image");
+                    if(imageElements != null)
+                    {
+                        foreach(XElement imgElement in imageElements)
+                        {
+                            AddImage(slide, imgElement);
+                        }
                     }
 
-                    XElement? tableElement = slideElement.Element("table");
-                    if (tableElement != null)
+                    IEnumerable<XElement> tableElements = slideElement.Elements("table");
+                    if (tableElements != null)
                     {
-                        AddTable(slide, tableElement);
+                        foreach (XElement tableElement in tableElements)
+                        {
+                            AddTable(slide, tableElement);
+                        }
                     }
 
-                    XElement? textboxElement = slideElement.Element("textbox");
-                    if(textboxElement != null)
+                    IEnumerable<XElement> shapeElements = slideElement.Elements("shape");
+                    if(shapeElements != null)
                     {
-                        string? text = textboxElement.Value;
+                        foreach(XElement shapeElement in shapeElements)
+                        {
+                            string? text = shapeElement.Value;
 
-                        AutoShapeType shapeType = Enum.TryParse<AutoShapeType>(textboxElement.Attribute("shapeType")?.Value ?? "Rectangle", true, out AutoShapeType st) ? st : AutoShapeType.Rectangle;
+                            AutoShapeType shapeType = Enum.TryParse<AutoShapeType>(shapeElement.Attribute("shapeType")?.Value ?? "Rectangle", true, out AutoShapeType st) ? st : AutoShapeType.Rectangle;
 
-                        bool bold    = bool.TryParse(textboxElement.Attribute("bold")?.Value, out bool b) && b;
-                        bool italic  = bool.TryParse(textboxElement.Attribute("italic")?.Value, out bool i) && i;
+                            bool bold = bool.TryParse(shapeElement.Attribute("bold")?.Value, out bool b) && b;
+                            bool italic = bool.TryParse(shapeElement.Attribute("italic")?.Value, out bool i) && i;
 
-                        string? textColor       = textboxElement.Attribute("textColor")?.Value ?? "#000000";
-                        string? backgroundColor = textboxElement.Attribute("backgroundColor")?.Value;
-                        int fontSize            = int.TryParse(textboxElement.Attribute("fontSize")?.Value, out int fs) ? fs : 12;
-                       
-                        HorizontalAlignmentType alignment = Enum.TryParse(textboxElement.Attribute("alignment")?.Value, true, out HorizontalAlignmentType align) ? align : HorizontalAlignmentType.Left;
+                            string? textColor = shapeElement.Attribute("textColor")?.Value ?? "#000000";
+                            string? backgroundColor = shapeElement.Attribute("backgroundColor")?.Value;
+                            int fontSize = int.TryParse(shapeElement.Attribute("fontSize")?.Value, out int fs) ? fs : 12;
 
-                        AddShape(textboxElement, slide, text, shapeType, bold, italic, textColor, backgroundColor, fontSize, alignment);
+                            HorizontalAlignmentType alignment = Enum.TryParse(shapeElement.Attribute("alignment")?.Value, true, out HorizontalAlignmentType align) ? align : HorizontalAlignmentType.Left;
+
+                            AddShape(shapeElement, slide, text, shapeType, bold, italic, textColor, backgroundColor, fontSize, alignment);
+                        }
                     }
 
-                    XElement? listElement = slideElement.Element("list");
-                    if(listElement != null)
+                    IEnumerable<XElement> listElements = slideElement.Elements("list");
+                    if(listElements != null)
                     {
-                        AddList(listElement, slide);
+                        foreach(XElement listElement in listElements)
+                        {
+                            AddList(listElement, slide);
+                        }
                     }
                 }
 
@@ -228,14 +238,14 @@ namespace PowerPointLibrary
 
             return (ColorObject)ColorObject.FromArgb(r, g, b);
         }
-        private static void AddShape(XElement textboxElement, ISlide slide, string text, AutoShapeType shapeType, bool bold = false, bool italic = false, string textColor = "#000000", string? backgroundColor = null, int fontSize = 12, HorizontalAlignmentType alignment = HorizontalAlignmentType.Left)
+        private static void AddShape(XElement shapeElement, ISlide slide, string text, AutoShapeType shapeType, bool bold = false, bool italic = false, string textColor = "#000000", string? backgroundColor = null, int fontSize = 12, HorizontalAlignmentType alignment = HorizontalAlignmentType.Left)
         {
-            string? fontFamily = textboxElement.Attribute("fontFamily")?.Value;
+            string? fontFamily = shapeElement.Attribute("fontFamily")?.Value;
 
-            double x = (double.TryParse(textboxElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
-            double y = (double.TryParse(textboxElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
-            double cx = (double.TryParse(textboxElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
-            double cy = (double.TryParse(textboxElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
+            double x = (double.TryParse(shapeElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
+            double y = (double.TryParse(shapeElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
+            double cx = (double.TryParse(shapeElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
+            double cy = (double.TryParse(shapeElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
 
             IShape shape = slide.Shapes.AddShape( shapeType, x, y, cx, cy);
             shape.Fill.FillType = FillType.None;
@@ -249,11 +259,20 @@ namespace PowerPointLibrary
             paragraph.HorizontalAlignment = alignment;
             paragraph.Font.Color = ParseColor(textColor);
 
+            //shape.LineFormat.Fill.FillType = FillType.None;
+
             if (backgroundColor != null)
             {
                 shape.Fill.FillType = FillType.Solid;
                 shape.Fill.SolidFill.Color = ParseColor(backgroundColor);
             }
+
+           
+
+        }
+        private static void AddText()
+        {
+
         }
         private static void AddTable(ISlide slide, XElement tableElement)
         {
@@ -322,13 +341,13 @@ namespace PowerPointLibrary
             XElement? footerElement = document.Element("footer");
             if (footerElement == null) return;
 
-            bool enableFooter = bool.TryParse(document.Element("settings")?.Attribute("enableFooter")?.Value, out bool result) && result;
+            bool enableFooter = bool.TryParse(document.Element("settings")?.Attribute("footer")?.Value, out bool result) && result;
             string? footerText = footerElement.Value;
 
             slide.HeadersFooters.Footer.Visible = enableFooter;
             slide.HeadersFooters.Footer.Text = footerText;
 
-            bool enableSlideNumber = bool.TryParse(document.Element("settings")?.Attribute("enableSlideNumber")?.Value, out bool resultNumber) && resultNumber;
+            bool enableSlideNumber = bool.TryParse(document.Element("settings")?.Attribute("slideNumber")?.Value, out bool resultNumber) && resultNumber;
 
             slide.HeadersFooters.SlideNumber.Visible = enableSlideNumber ;
 
