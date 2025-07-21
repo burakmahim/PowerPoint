@@ -32,16 +32,23 @@ namespace PowerPointApp.Mvc.Controllers
         }
 
         [HttpPost]
-        public ActionResult DownloadExcelFromText(string excelText)
+        [ValidateInput(false)]
+        public ActionResult GenerateExcelFromXml(string xmlContent)
         {
-            if (string.IsNullOrWhiteSpace(excelText))
-                return new HttpStatusCodeResult(400, "Veri boş olamaz.");
+            if (string.IsNullOrWhiteSpace(xmlContent))
+                return new HttpStatusCodeResult(400, "XML boş olamaz.");
 
-            byte[] excelFile = ExcelLibrary.CreateExcelFromText(excelText);
-            return File(excelFile,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "veriler.xlsx");
+            try
+            {
+                byte[] result = ExcelLibrary.CreateExcelFromCustomXml(xmlContent);
+                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "veriler.xlsx");
+            }
+            catch (Exception ex)
+            {
+                return new HttpStatusCodeResult(500, $"Excel oluşturulamadı: {ex.Message}");
+            }
         }
+
 
 
         [HttpPost]
