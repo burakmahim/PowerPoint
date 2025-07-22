@@ -68,3 +68,100 @@
 	</slide>
 
 </presentation>
+<<<<<<< Updated upstream
+=======
+
+
+<excel>
+	<sheet name="Satış Verileri">
+
+		<chart type="column" range="B5:E17" path="SatisVerileri.xlsx" />
+
+		<table startCell="A1">
+			<row>
+				<cell>Ay</cell>
+				<cell>Ürün A Satışı</cell>
+				<cell>Ürün B Satışı</cell>
+				<cell>Ürün C Satışı</cell>
+			</row>
+			<row>
+				<cell>Ocak</cell>
+				<cell>120</cell>
+				<cell>85</cell>
+				<cell>60</cell>
+			</row>
+			<row>
+				<cell>Şubat</cell>
+				<cell>140</cell>
+				<cell>95</cell>
+				<cell>70</cell>
+			</row>
+			<row>
+				<cell>Mart</cell>
+				<cell>170</cell>
+				<cell>110</cell>
+				<cell>90</cell>
+			</row>
+			<row>
+				<cell>Nisan</cell>
+				<cell>160</cell>
+				<cell>105</cell>
+				<cell>85</cell>
+			</row>
+			<row>
+				<cell>Mayıs</cell>
+				<cell>180</cell>
+				<cell>120</cell>
+				<cell>100</cell>
+			</row>
+			<row>
+				<cell>Haziran</cell>
+				<cell>175</cell>
+				<cell>115</cell>
+				<cell>95</cell>
+			</row>
+			<row>
+				<cell>Temmuz</cell>
+				<cell>190</cell>
+				<cell>125</cell>
+				<cell>105</cell>
+			</row>
+			<row>
+				<cell>Ağustos</cell>
+				<cell>200</cell>
+				<cell>130</cell>
+				<cell>110</cell>
+			</row>
+			<row>
+				<cell>Eylül</cell>
+				<cell>185</cell>
+				<cell>120</cell>
+				<cell>100</cell>
+			</row>
+			<row>
+				<cell>Ekim</cell>
+				<cell>195</cell>
+				<cell>135</cell>
+				<cell>115</cell>
+			</row>
+			<row>
+				<cell>Kasım</cell>
+				<cell>210</cell>
+				<cell>140</cell>
+				<cell>120</cell>
+			</row>
+			<row>
+				<cell>Aralık</cell>
+				<cell>220</cell>
+				<cell>145</cell>
+				<cell>125</cell>
+			</row>
+		</table>
+
+	</sheet>
+
+	<sheet>
+
+	</sheet>
+</excel>
+>>>>>>> Stashed changes
