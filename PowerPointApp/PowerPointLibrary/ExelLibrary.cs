@@ -13,6 +13,7 @@ namespace PowerPointLibrary
 {
     public static class ExcelLibrary
     {
+
         public static byte[] CreateExcelFromCustomXml(string xmlContent)
         {
 #if NET48 || NET9_0
@@ -39,14 +40,18 @@ namespace PowerPointLibrary
                 {
                     foreach (XElement table in tables)
                     {
-                        AddTable(table, sheet, currentRow, currentColumn);
+                        // 🔁 AddTable artık tablo son satırını döndürüyor
+                        currentRow = AddTable(table, sheet, currentRow, currentColumn);
+                        currentRow += 1; // Tablodan sonra 1 satır boşluk
                     }
                 }
 
                 XElement chartElement = sheetXml.Element("chart");
                 if (chartElement != null)
                 {
-                    AddChart(chartElement, sheet, sheetXml);
+                    // 🔁 Grafik, tabloların bittiği yerin altına çizilsin
+                    AddChart(chartElement, sheet, sheetXml, currentRow);
+                    currentRow += 22; // Grafik yüksekliği + boşluk
                 }
 
                 pageCounter++;
@@ -56,11 +61,12 @@ namespace PowerPointLibrary
             workbook.SaveAs(ms);
             return ms.ToArray();
 #else
-            throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
+    throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
 #endif
         }
 
-        private static void AddTable(XElement table, IWorksheet sheet, int startRow, int startCol)
+
+        private static int AddTable(XElement table, IWorksheet sheet, int startRow, int startCol)
         {
             string? startCell = table.Attribute("startCell")?.Value;
             if (!string.IsNullOrWhiteSpace(startCell))
@@ -90,18 +96,21 @@ namespace PowerPointLibrary
             }
 
             sheet.UsedRange.AutofitColumns();
+
+            return startRow + rows.Count; // yeni konum: tablonun alt satırı
         }
 
-        private static void AddChart(XElement chartElement, IWorksheet sheet, XElement sheetXml)
+
+
+        private static void AddChart(XElement chartElement, IWorksheet sheet, XElement sheetXml, int chartStartRow)
         {
+            int chartStartCol = 1;
+
             var chart = sheet.Charts.Add();
             chart.ChartType = ParseChartType(chartElement.Attribute("type")?.Value ?? "Column");
             chart.ChartTitle = chartElement.Attribute("title")?.Value ?? "";
             chart.PrimaryCategoryAxis.Title = chartElement.Attribute("xAxis")?.Value ?? "";
             chart.PrimaryValueAxis.Title = chartElement.Attribute("yAxis")?.Value ?? "";
-
-            int chartStartRow = 20;
-            int chartStartCol = 1;
 
             var dataRangeAttr = chartElement.Attribute("dataRange")?.Value;
             if (!string.IsNullOrEmpty(dataRangeAttr))
@@ -111,6 +120,7 @@ namespace PowerPointLibrary
             }
             else if (chartElement.Elements("series").Any())
             {
+                // ⏩ manual series
                 var seriesList = chartElement.Elements("series").ToList();
                 for (int s = 0; s < seriesList.Count; s++)
                 {
@@ -137,7 +147,7 @@ namespace PowerPointLibrary
             }
             else
             {
-                // 🔧 TABLODAN OTOMATİK VERİ AL
+                // 🔁 otomatik veri aralığı bul
                 var firstTable = sheetXml.Elements("table").FirstOrDefault();
                 if (firstTable != null)
                 {
@@ -154,16 +164,15 @@ namespace PowerPointLibrary
 
                     chart.DataRange = sheet.Range[tableStartRow, tableStartCol, lastDataRow, lastDataCol];
                     chart.IsSeriesInRows = false;
-                    //chart.DataLabels.IsValue = true;
-                    chart.TopRow = chartStartRow;
-                    chart.LeftColumn = chartStartCol;
-                    chart.BottomRow = chartStartRow + 20;
-                    chart.RightColumn = chartStartCol + 10;
                 }
             }
+
+            // ⏬ grafik konumu
+            chart.TopRow = chartStartRow;
+            chart.LeftColumn = chartStartCol;
+            chart.BottomRow = chartStartRow + 20;
+            chart.RightColumn = chartStartCol + 10;
         }
-
-
 
 
 
@@ -174,6 +183,10 @@ namespace PowerPointLibrary
                 "line" => ExcelChartType.Line,
                 "pie" => ExcelChartType.Pie,
                 "bar" => ExcelChartType.Bar_Clustered,
+                "doughnut" => ExcelChartType.Doughnut,
+                "area" => ExcelChartType.Area,
+                "scatter" => ExcelChartType.Scatter_Markers,
+                "bubble" => ExcelChartType.Bubble,
                 _ => ExcelChartType.Column_Clustered
             };
         }

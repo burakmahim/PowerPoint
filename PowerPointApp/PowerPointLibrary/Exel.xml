@@ -1,0 +1,84 @@
+﻿<excels>
+	
+		tüm tablo
+		
+		
+<excel>
+	<sheet name="Satış Raporu">
+		<table startCell="A1">
+			<row>
+				<cell bold="true">Ay</cell>
+				<cell bold="true">Gelir</cell>
+				<cell bold="true">Gider</cell>
+			</row>
+			<row>
+				<cell>Ocak</cell>
+				<cell>1000</cell>
+				<cell>400</cell>
+			</row>
+			<row>
+				<cell>Şubat</cell>
+				<cell>1200</cell>
+				<cell>500</cell>
+			</row>
+			<row>
+				<cell>Mart</cell>
+				<cell>1500</cell>
+				<cell>700</cell>
+			</row>
+		</table>
+
+		<chart type="Column" title="Aylık Gelir-Gider" xAxis="Ay" yAxis="Tutar" />
+	</sheet>
+</excel>
+
+
+
+	
+	elle grafik
+
+<excel>
+	<sheet name="Sıcaklık">
+		<chart type="Line" title="Günlük Sıcaklıklar" xAxis="Gün" yAxis="°C">
+			<series name="İstanbul">
+				<point label="Pzt" value="25" />
+				<point label="Salı" value="27" />
+				<point label="Çarş" value="28" />
+			</series>
+			<series name="Ankara">
+				<point label="Pzt" value="20" />
+				<point label="Salı" value="21" />
+				<point label="Çarş" value="22" />
+			</series>
+		</chart>
+	</sheet>
+</excel>
+
+
+
+	
+	belli bir bölgeyi kapsayan
+	
+<excel>
+	<sheet name="Hazır Aralık">
+		<table startCell="B2">
+			<row>
+				<cell>Ürün</cell>
+				<cell>Stok</cell>
+			</row>
+			<row>
+				<cell>Kalem</cell>
+				<cell>120</cell>
+			</row>
+			<row>
+				<cell>Defter</cell>
+				<cell>90</cell>
+			</row>
+		</table>
+		<chart type="Pie" title="Stok Dağılımı" dataRange="B2:C4" />
+	</sheet>
+</excel>
+	
+	
+</excels>
+	
