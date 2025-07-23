@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-
+using System.Collections.Generic;
 
 #if NET48 || NET9_0
 using Syncfusion.XlsIO;
@@ -12,6 +13,7 @@ namespace PowerPointLibrary
 {
     public static class ExcelLibrary
     {
+
         public static byte[] CreateExcelFromCustomXml(string xmlContent)
         {
 #if NET48 || NET9_0
@@ -19,90 +21,41 @@ namespace PowerPointLibrary
             IApplication application = excelEngine.Excel;
             application.DefaultVersion = ExcelVersion.Excel2016;
 
-            IWorkbook workbook = application.Workbooks.Create(1);
-            IWorksheet sheet = workbook.Worksheets[0];
+            IWorkbook workbook = application.Workbooks.Create(0);
 
-            var doc = XDocument.Parse(xmlContent);
-            var sheetElement = doc.Root?.Element("sheet");
-            if (sheetElement == null)
-                throw new InvalidDataException("Sheet bulunamadı.");
+            int pageCounter = 1;
 
-            var sheetName = sheetElement.Attribute("name")?.Value ?? "Sayfa1";
-            sheet.Name = sheetName;
+            var document = XElement.Parse(xmlContent);
 
-            // 📌 Varsayılan başlangıç konumları
-            int tableStartRow = 1, tableStartCol = 1;
-            int chartStartRow = -1, chartStartCol = -1;
-
-            // 📌 Tabloyu işle
-            var table = sheetElement.Element("table");
-            var rows = table?.Elements("row").ToList();
-            if (table != null && rows != null)
+            foreach (XElement sheetXml in document.Descendants("sheet"))
             {
-                var tableStartCell = table.Attribute("startCell")?.Value;
-                if (!string.IsNullOrEmpty(tableStartCell))
-                    (tableStartRow, tableStartCol) = GetRowColFromCell(tableStartCell);
+                int currentRow = 1;
+                int currentColumn = 1;
 
-                for (int i = 0; i < rows.Count; i++)
+                string sheetName = sheetXml.Attribute("name")?.Value ?? $"Sayfa{pageCounter}";
+                IWorksheet sheet = workbook.Worksheets.Create(sheetName);
+
+                IEnumerable<XElement> tables = sheetXml.Elements("table");
+                if (tables != null)
                 {
-                    var cells = rows[i].Elements("cell").ToList();
-                    for (int j = 0; j < cells.Count; j++)
+                    foreach (XElement table in tables)
                     {
-                        var cell = sheet.Range[tableStartRow + i, tableStartCol + j];
-                        cell.Text = cells[j].Value;
-                        if (cells[j].Attribute("bold")?.Value == "true")
-                            cell.CellStyle.Font.Bold = true;
+                        currentRow = AddTable(table, sheet, currentRow, currentColumn);
+                        currentRow += 1;
                     }
                 }
 
-                // 📌 Chart için başlangıç ayarlanmadıysa tablonun altına koy
-                if (chartStartRow == -1)
+                IEnumerable<XElement> charts = sheetXml.Elements("chart");
+                if (charts != null)
                 {
-                    chartStartRow = tableStartRow + rows.Count + 2;
-                    chartStartCol = tableStartCol;
-                }
-            }
-
-            // 📊 Chart varsa işle
-            var chartElement = sheetElement.Element("chart");
-            if (chartElement != null)
-            {
-                var chartStartCell = chartElement.Attribute("startCell")?.Value;
-                if (!string.IsNullOrEmpty(chartStartCell))
-                    (chartStartRow, chartStartCol) = GetRowColFromCell(chartStartCell);
-
-                var chart = sheet.Charts.Add();
-                chart.ChartType = ParseChartType(chartElement.Attribute("type")?.Value ?? "Column");
-                chart.ChartTitle = chartElement.Attribute("title")?.Value ?? "";
-
-                chart.PrimaryCategoryAxis.Title = chartElement.Attribute("xAxis")?.Value ?? "";
-                chart.PrimaryValueAxis.Title = chartElement.Attribute("yAxis")?.Value ?? "";
-
-                int seriesCount = 0;
-                var seriesList = chartElement.Elements("series").ToList();
-
-                foreach (var series in seriesList)
-                {
-                    string seriesName = series.Attribute("name")?.Value ?? $"Seri {seriesCount + 1}";
-                    var points = series.Elements("point").ToList();
-                    var dataRow = chartStartRow + seriesCount;
-
-                    sheet.Range[dataRow, chartStartCol].Text = seriesName;
-
-                    for (int i = 0; i < points.Count; i++)
+                    foreach(XElement chart in charts)
                     {
-                        sheet.Range[chartStartRow - 1, chartStartCol + i + 1].Text = points[i].Attribute("label")?.Value ?? $"Etiket {i + 1}";
-                        sheet.Range[dataRow, chartStartCol + i + 1].Number = double.Parse(points[i].Attribute("value")?.Value ?? "0");
+                        AddChart(chart, sheet, sheetXml, currentRow);
+                        currentRow += 22;
                     }
-
-                    seriesCount++;
                 }
 
-                int chartLastRow = chartStartRow + seriesCount - 1;
-                int chartLastCol = chartStartCol + seriesList.First().Elements("point").Count();
-
-                chart.DataRange = sheet.Range[chartStartRow - 1, chartStartCol, chartLastRow, chartLastCol];
-                chart.IsSeriesInRows = true;
+                pageCounter++;
             }
 
             using MemoryStream ms = new MemoryStream();
@@ -112,26 +65,153 @@ namespace PowerPointLibrary
     throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
 #endif
         }
-
-
-        private static (int Row, int Col) GetRowColFromCell(string cell)
+        private static int AddTable(XElement table, IWorksheet sheet, int startRow, int startCol)
         {
-            // Örn: A1 => (1, 1), B2 => (2, 2)
-            int col = 0;
-            int rowIndex = 0;
-            foreach (char ch in cell)
+            string? startCell = table.Attribute("startCell")?.Value;
+            if (!string.IsNullOrWhiteSpace(startCell))
             {
-                if (char.IsLetter(ch))
+                IRange range = sheet.Range[startCell];
+                startRow = range.Row;
+                startCol = range.Column;
+            }
+
+            List<XElement> rows = table.Elements("row").ToList();
+            for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
+            {
+                List<XElement> cells = rows[rowIndex].Elements("cell").ToList();
+                for (int colIndex = 0; colIndex < cells.Count; colIndex++)
                 {
-                    col = col * 26 + (char.ToUpper(ch) - 'A' + 1);
-                }
-                else if (char.IsDigit(ch))
-                {
-                    rowIndex = rowIndex * 10 + (ch - '0');
+                    IRange cell = sheet[startRow + rowIndex, startCol + colIndex];
+                    string value = cells[colIndex].Value;
+
+                    if (double.TryParse(value, out double numericValue))
+                        cell.Number = numericValue;
+                    else
+                        cell.Text = value;
+
+                    if (cells[colIndex].Attribute("bold")?.Value == "true")
+                        cell.CellStyle.Font.Bold = true;
                 }
             }
-            return (rowIndex, col);
+
+            sheet.UsedRange.AutofitColumns();
+
+            return startRow + rows.Count;
         }
+
+        private static void AddChart(XElement chartElement, IWorksheet sheet, XElement sheetXml, int chartStartRow)
+        {
+            int chartStartCol = 1;
+
+            IChartShape chart = sheet.Charts.Add();
+
+            chart.ChartType = ParseChartType(chartElement.Attribute("type")?.Value ?? "Column");
+            chart.ChartTitle = chartElement.Attribute("title")?.Value ?? "";
+            chart.PrimaryCategoryAxis.Title = chartElement.Attribute("xAxis")?.Value ?? "";
+            chart.PrimaryValueAxis.Title = chartElement.Attribute("yAxis")?.Value ?? "";
+
+            string? dataRange = chartElement.Attribute("dataRange")?.Value;
+
+
+            if (chartElement.Elements("series").Any())
+            {
+                var seriesList = chartElement.Elements("series").ToList();
+                for (int s = 0; s < seriesList.Count; s++)
+                {
+                    var series = seriesList[s];
+                    var name = series.Attribute("name")?.Value ?? $"Seri {s + 1}";
+                    var points = series.Elements("point").ToList();
+                    int row = chartStartRow + s;
+
+                    sheet.Range[row, chartStartCol].Text = name;
+
+                    for (int i = 0; i < points.Count; i++)
+                    {
+                        sheet.Range[chartStartRow - 1, chartStartCol + i + 1].Text = points[i].Attribute("label")?.Value;
+                        sheet.Range[row, chartStartCol + i + 1].Number = double.Parse(points[i].Attribute("value")?.Value ?? "0");
+                    }
+                }
+
+                int chartEndRow = chartStartRow + seriesList.Count - 1;
+                int firstSeriesPoints = seriesList.FirstOrDefault()?.Elements("point")?.Count() ?? 0;
+                int chartEndCol = chartStartCol + firstSeriesPoints;
+
+                chart.DataRange = sheet.Range[chartStartRow - 1, chartStartCol, chartEndRow, chartEndCol];
+                chart.IsSeriesInRows = true;
+            }
+            //else
+            //{
+            //    XElement? table = sheetXml.Element("table");
+            //    if (table != null)
+            //    {
+            //        IRange range = sheet.Range[dataRange];
+            //        int tableStartRow;
+            //        int tableStartCol;
+
+            //        if (!String.IsNullOrWhiteSpace(dataRange))
+            //        {
+            //            range = sheet.Range[dataRange];
+            //            chart.DataRange = sheet.Range[dataRange];
+            //        }
+
+            //        tableStartRow = range.Row;
+            //        tableStartCol = range.Column;
+
+            //        int dataRows = table.Elements("row").Count();
+            //        int dataCols = table.Elements("row").Max(r => r.Elements("cell").Count());
+
+            //        int lastDataRow = tableStartRow + dataRows - 1;
+            //        int lastDataCol = tableStartCol + dataCols - 1;
+
+            //        chart.DataRange = sheet.Range[tableStartRow, tableStartCol, lastDataRow, lastDataCol];
+            //        chart.IsSeriesInRows = false;
+            //    }
+            //}
+
+            else
+            {
+                XElement? table = sheetXml.Element("table");
+                if (table != null)
+                {
+                    int tableStartRow;
+                    int tableStartCol;
+
+                    if (!string.IsNullOrWhiteSpace(dataRange))
+                    {
+                        IRange range = sheet.Range[dataRange];
+                        chart.DataRange = range;
+
+                        tableStartRow = range.Row;
+                        tableStartCol = range.Column;
+                    }
+                    else
+                    {
+                        // Eğer dataRange belirtilmemişse, chart çizim pozisyonundan başla
+                        tableStartRow = chartStartRow;
+                        tableStartCol = chartStartCol;
+                    }
+
+                    // Tablo boyutlarını belirle
+                    int dataRows = table.Elements("row").Count();
+                    int dataCols = table.Elements("row").Max(r => r.Elements("cell").Count());
+
+                    int lastDataRow = tableStartRow + dataRows - 1;
+                    int lastDataCol = tableStartCol + dataCols - 1;
+
+                    // Grafik veri aralığını ayarla
+                    chart.DataRange = sheet.Range[tableStartRow, tableStartCol, lastDataRow, lastDataCol];
+                    chart.IsSeriesInRows = false;
+                }
+            }
+
+
+            chart.TopRow = chartStartRow;
+            chart.LeftColumn = chartStartCol;
+            chart.BottomRow = chartStartRow + 20;
+            chart.RightColumn = chartStartCol + 10;
+        }
+
+
 
         private static ExcelChartType ParseChartType(string type)
         {
@@ -140,9 +220,12 @@ namespace PowerPointLibrary
                 "line" => ExcelChartType.Line,
                 "pie" => ExcelChartType.Pie,
                 "bar" => ExcelChartType.Bar_Clustered,
+                "doughnut" => ExcelChartType.Doughnut,
+                "area" => ExcelChartType.Area,
+                "scatter" => ExcelChartType.Scatter_Markers,
+                "bubble" => ExcelChartType.Bubble,
                 _ => ExcelChartType.Column_Clustered
             };
         }
     }
 }
-
