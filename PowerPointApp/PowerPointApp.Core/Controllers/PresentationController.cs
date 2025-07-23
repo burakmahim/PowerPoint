@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using PowerPointLibrary;
+using PowerPointLibrary.Exceptions;
+
 
 namespace PowerPointApp.Core.Controllers
 {
+    [Route("[controller]/[action]")]
     public class PresentationController : Controller
     {
         [HttpGet]
@@ -12,40 +15,82 @@ namespace PowerPointApp.Core.Controllers
             return View(); // Views/Presentation/Index.cshtml
         }
 
-
         [HttpPost]
-        public IActionResult DownloadPptx(string xmlContent)
-        {
-            var pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-            return File(pptBytes,
-                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                "Sunum.pptx");
-        }
-
-
-        [HttpPost]
-        public ActionResult Generate(string xmlContent, string format)
+        public IActionResult DownloadPptx([FromForm] string xmlContent)
         {
             if (string.IsNullOrWhiteSpace(xmlContent))
-                return Content("XML içeriği boş olamaz.");
+                return BadRequest("XML içeriği boş olamaz.");
 
-            byte[] result;
-            string mime, filename;
-
-            if (format == "pdf")
+            try
             {
-                result = PowerPointGenerator.ConvertToPdf(xmlContent);
-                mime = "application/pdf";
-                filename = "sunum.pdf";
+                var pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+                return File(
+                    pptBytes,
+                    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                    "Sunum.pptx"
+                );
             }
-            else
+            catch (Exception ex)
             {
-                result = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-                mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                filename = "sunum.pptx";
+                return StatusCode(500, $"PowerPoint oluşturulamadı: {ex.Message}");
             }
+        }
 
-            return File(result, mime, filename);
+        [HttpPost]
+        public IActionResult GenerateExcelFromXml([FromForm] string xmlContent)
+        {
+            if (string.IsNullOrWhiteSpace(xmlContent))
+                return BadRequest("XML içeriği boş olamaz.");
+
+            try
+            {
+                byte[] result = ExcelLibrary.CreateExcelFromCustomXml(xmlContent);
+                return File(
+                    result,
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    "veriler.xlsx"
+                );
+            }
+            catch (ExcelGenerationException ex)
+            {
+                return StatusCode(500, $"Excel hatası: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Beklenmeyen hata: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult Generate([FromForm] string xmlContent, [FromForm] string format)
+        {
+            if (string.IsNullOrWhiteSpace(xmlContent))
+                return BadRequest("XML içeriği boş olamaz.");
+
+            try
+            {
+                byte[] result;
+                string mime, filename;
+
+                if (format?.ToLowerInvariant() == "pdf")
+                {
+                    result = PowerPointGenerator.ConvertToPdf(xmlContent);
+                    mime = "application/pdf";
+                    filename = "sunum.pdf";
+                }
+                else
+                {
+                    result = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+                    mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                    filename = "sunum.pptx";
+                }
+
+                return File(result, mime, filename);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Dosya oluşturulamadı: {ex.Message}");
+            }
         }
     }
 }

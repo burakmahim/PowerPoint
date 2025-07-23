@@ -4,6 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using PowerPointLibrary.Helpers;
+using PowerPointLibrary.Services;
+using PowerPointLibrary.Exceptions;
+
+
+
 
 #if NET48 || NET9_0
 using Syncfusion.XlsIO;
@@ -17,178 +23,54 @@ namespace PowerPointLibrary
         public static byte[] CreateExcelFromCustomXml(string xmlContent)
         {
 #if NET48 || NET9_0
-            using ExcelEngine excelEngine = new ExcelEngine();
-            IApplication application = excelEngine.Excel;
-            application.DefaultVersion = ExcelVersion.Excel2016;
-
-            IWorkbook workbook = application.Workbooks.Create(0);
-
-            int pageCounter = 1;
-
-            var document = XElement.Parse(xmlContent);
-
-            foreach (XElement sheetXml in document.Descendants("sheet"))
+            try
             {
-                int currentRow = 1;
-                int currentColumn = 1;
+                using ExcelEngine excelEngine = new ExcelEngine();
+                IApplication application = excelEngine.Excel;
+                application.DefaultVersion = ExcelVersion.Excel2016;
 
-                string sheetName = sheetXml.Attribute("name")?.Value ?? $"Sayfa{pageCounter}";
-                IWorksheet sheet = workbook.Worksheets.Create(sheetName);
+                IWorkbook workbook = application.Workbooks.Create(0);
+                int pageCounter = 1;
+                var document = XElement.Parse(xmlContent);
 
-                IEnumerable<XElement> tables = sheetXml.Elements("table");
-                if (tables != null)
+                foreach (XElement sheetXml in document.Descendants("sheet"))
                 {
-                    foreach (XElement table in tables)
+                    int currentRow = 1;
+                    int currentColumn = 1;
+
+                    string sheetName = sheetXml.Attribute("name")?.Value ?? $"Sayfa{pageCounter}";
+                    IWorksheet sheet = workbook.Worksheets.Create(sheetName);
+
+                    var tableMap = new Dictionary<string, (int StartRow, int StartCol, int RowCount, int ColCount)>();
+
+                    foreach (XElement table in sheetXml.Elements("table"))
                     {
-                        // 🔁 AddTable artık tablo son satırını döndürüyor
-                        currentRow = AddTable(table, sheet, currentRow, currentColumn);
-                        currentRow += 1; // Tablodan sonra 1 satır boşluk
+                        currentRow = ExcelTableBuilder.AddTable(table, sheet, currentRow, currentColumn, tableMap);
+                        currentRow += 1;
                     }
+
+                    foreach (XElement chartElement in sheetXml.Elements("chart"))
+                    {
+                        ExcelChartBuilder.AddChart(chartElement, sheet, currentRow, tableMap);
+                        currentRow += 22;
+                    }
+
+                    pageCounter++;
                 }
 
-                XElement chartElement = sheetXml.Element("chart");
-                if (chartElement != null)
-                {
-                    // 🔁 Grafik, tabloların bittiği yerin altına çizilsin
-                    AddChart(chartElement, sheet, sheetXml, currentRow);
-                    currentRow += 22; // Grafik yüksekliği + boşluk
-                }
-
-                pageCounter++;
+                using MemoryStream ms = new MemoryStream();
+                workbook.SaveAs(ms);
+                return ms.ToArray();
             }
-
-            using MemoryStream ms = new MemoryStream();
-            workbook.SaveAs(ms);
-            return ms.ToArray();
+            catch (Exception ex)
+            {
+                throw new ExcelGenerationException("Excel oluşturulurken bir hata meydana geldi.", ex);
+            }
 #else
     throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
 #endif
         }
 
 
-        private static int AddTable(XElement table, IWorksheet sheet, int startRow, int startCol)
-        {
-            string? startCell = table.Attribute("startCell")?.Value;
-            if (!string.IsNullOrWhiteSpace(startCell))
-            {
-                IRange range = sheet.Range[startCell];
-                startRow = range.Row;
-                startCol = range.Column;
-            }
-
-            List<XElement> rows = table.Elements("row").ToList();
-            for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
-            {
-                List<XElement> cells = rows[rowIndex].Elements("cell").ToList();
-                for (int colIndex = 0; colIndex < cells.Count; colIndex++)
-                {
-                    IRange cell = sheet[startRow + rowIndex, startCol + colIndex];
-                    string value = cells[colIndex].Value;
-
-                    if (double.TryParse(value, out double numericValue))
-                        cell.Number = numericValue;
-                    else
-                        cell.Text = value;
-
-                    if (cells[colIndex].Attribute("bold")?.Value == "true")
-                        cell.CellStyle.Font.Bold = true;
-                }
-            }
-
-            sheet.UsedRange.AutofitColumns();
-
-            return startRow + rows.Count; // yeni konum: tablonun alt satırı
-        }
-
-
-
-        private static void AddChart(XElement chartElement, IWorksheet sheet, XElement sheetXml, int chartStartRow)
-        {
-            int chartStartCol = 1;
-
-            var chart = sheet.Charts.Add();
-            chart.ChartType = ParseChartType(chartElement.Attribute("type")?.Value ?? "Column");
-            chart.ChartTitle = chartElement.Attribute("title")?.Value ?? "";
-            chart.PrimaryCategoryAxis.Title = chartElement.Attribute("xAxis")?.Value ?? "";
-            chart.PrimaryValueAxis.Title = chartElement.Attribute("yAxis")?.Value ?? "";
-
-            var dataRangeAttr = chartElement.Attribute("dataRange")?.Value;
-            if (!string.IsNullOrEmpty(dataRangeAttr))
-            {
-                chart.DataRange = sheet.Range[dataRangeAttr];
-                chart.IsSeriesInRows = false;
-            }
-            else if (chartElement.Elements("series").Any())
-            {
-                // ⏩ manual series
-                var seriesList = chartElement.Elements("series").ToList();
-                for (int s = 0; s < seriesList.Count; s++)
-                {
-                    var series = seriesList[s];
-                    var name = series.Attribute("name")?.Value ?? $"Seri {s + 1}";
-                    var points = series.Elements("point").ToList();
-                    int row = chartStartRow + s;
-
-                    sheet.Range[row, chartStartCol].Text = name;
-
-                    for (int i = 0; i < points.Count; i++)
-                    {
-                        sheet.Range[chartStartRow - 1, chartStartCol + i + 1].Text = points[i].Attribute("label")?.Value;
-                        sheet.Range[row, chartStartCol + i + 1].Number = double.Parse(points[i].Attribute("value")?.Value ?? "0");
-                    }
-                }
-
-                int chartEndRow = chartStartRow + seriesList.Count - 1;
-                int firstSeriesPoints = seriesList.FirstOrDefault()?.Elements("point")?.Count() ?? 0;
-                int chartEndCol = chartStartCol + firstSeriesPoints;
-
-                chart.DataRange = sheet.Range[chartStartRow - 1, chartStartCol, chartEndRow, chartEndCol];
-                chart.IsSeriesInRows = true;
-            }
-            else
-            {
-                // 🔁 otomatik veri aralığı bul
-                var firstTable = sheetXml.Elements("table").FirstOrDefault();
-                if (firstTable != null)
-                {
-                    string startCell = firstTable.Attribute("startCell")?.Value ?? "A1";
-                    IRange range = sheet.Range[startCell];
-                    int tableStartRow = range.Row;
-                    int tableStartCol = range.Column;
-
-                    int dataRows = firstTable.Elements("row").Count();
-                    int dataCols = firstTable.Elements("row").Max(r => r.Elements("cell").Count());
-
-                    int lastDataRow = tableStartRow + dataRows - 1;
-                    int lastDataCol = tableStartCol + dataCols - 1;
-
-                    chart.DataRange = sheet.Range[tableStartRow, tableStartCol, lastDataRow, lastDataCol];
-                    chart.IsSeriesInRows = false;
-                }
-            }
-
-            // ⏬ grafik konumu
-            chart.TopRow = chartStartRow;
-            chart.LeftColumn = chartStartCol;
-            chart.BottomRow = chartStartRow + 20;
-            chart.RightColumn = chartStartCol + 10;
-        }
-
-
-
-        private static ExcelChartType ParseChartType(string type)
-        {
-            return type.ToLower() switch
-            {
-                "line" => ExcelChartType.Line,
-                "pie" => ExcelChartType.Pie,
-                "bar" => ExcelChartType.Bar_Clustered,
-                "doughnut" => ExcelChartType.Doughnut,
-                "area" => ExcelChartType.Area,
-                "scatter" => ExcelChartType.Scatter_Markers,
-                "bubble" => ExcelChartType.Bubble,
-                _ => ExcelChartType.Column_Clustered
-            };
-        }
     }
 }

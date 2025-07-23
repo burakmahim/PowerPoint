@@ -1,27 +1,80 @@
 ﻿@{
-    ViewBag.Title = "Sunum Oluştur";
+	ViewBag.Title = "Sunum ve Excel Oluşturucu";
 }
 
-<h2>XML'den Sunum Oluştur</h2>
+<div class="container mt-4">
+	<h1 class="mb-4 text-center">XML'den PowerPoint / Excel Oluştur</h1>
 
-<form method="post" asp-action="DownloadPptx" asp-controller="Presentation" target="_blank">
-    <div class="form-group">
-        <label for="xmlContent">Sunum XML İçeriği</label>
-        <textarea name="xmlContent" id="xmlContent" rows="20" class="form-control">
+	<!-- PowerPoint Formu -->
+	<div class="card mb-5">
+		<div class="card-header bg-primary text-white">
+			<h5 class="mb-0">🎞️ PowerPoint Sunumu Oluştur</h5>
+		</div>
+		<div class="card-body">
+			<form method="post" asp-action="DownloadPptx" asp-controller="Presentation" target="_blank">
+				<div class="form-group">
+					<label for="xmlContentPpt">PowerPoint XML İçeriği</label>
+					<textarea name="xmlContent" id="xmlContentPpt" rows="10" class="form-control" style="font-family: monospace;">
 <presentation>
-        <slide>
-        <title x="50" y="20" w="600" h="50">Başlık</title>
-        <body x="50" y="100" w="600" h="200">İçerik metni buraya.</body>
+					<slide>
+					<title x="50" y="20" w="600" h="50">Başlık</title>
+					<body x="50" y="100" w="600" h="200">İçerik metni buraya.</body>
   </slide>
 </presentation>
-        </textarea>
-    </div>
-    <button type="submit" class="btn btn-primary mt-2">PowerPoint İndir</button>
-</form>
+                    </textarea>
+				</div>
+				<button type="submit" class="btn btn-primary mt-3">PowerPoint İndir</button>
+			</form>
+		</div>
+	</div>
 
-<script>
-    // İkinci formdaki hidden textarea'ya da aynı XML'i gönder
-    document.querySelector("form[action$='ViewPdf']").addEventListener("submit", function () {
-        document.getElementById("xmlContentHidden").value = document.getElementById("xmlContent").value;
-    });
-</script>
+	<!-- Excel Formu -->
+	<div class="card">
+		<div class="card-header bg-success text-white">
+			<h5 class="mb-0">📊 Excel Dosyası Oluştur</h5>
+		</div>
+		<div class="card-body">
+			<form method="post" asp-action="GenerateExcelFromXml" asp-controller="Presentation">
+				@Html.AntiForgeryToken()
+
+				<div class="form-group">
+					<label for="xmlContentExcel">Excel XML İçeriği</label>
+					<textarea name="xmlContent" id="xmlContentExcel" rows="12" class="form-control" style="font-family: monospace;"></textarea>
+				</div>
+
+				<button type="submit" class="btn btn-success mt-3">Excel Oluştur ve İndir</button>
+
+				<div class="mt-4">
+					<h6>📌 Örnek XML Formatı:</h6>
+<pre class="bg-light border p-3 rounded small">
+&lt;excel&gt;
+  &lt;sheet name="Satış Verileri"&gt;
+    &lt;table startCell="A1"&gt;
+      &lt;row&gt;
+        &lt;cell bold="true"&gt;Ay&lt;/cell&gt;
+        &lt;cell bold="true"&gt;Elma&lt;/cell&gt;
+        &lt;cell bold="true"&gt;Armut&lt;/cell&gt;
+      &lt;/row&gt;
+      &lt;row&gt;
+        &lt;cell&gt;Ocak&lt;/cell&gt;
+        &lt;cell&gt;100&lt;/cell&gt;
+        &lt;cell&gt;80&lt;/cell&gt;
+      &lt;/row&gt;
+    &lt;/table&gt;
+
+    &lt;chart type="Column" title="Satış Grafiği" xAxis="Ay" yAxis="Tutar"&gt;
+      &lt;series name="Elma"&gt;
+        &lt;point label="Ocak" value="100" /&gt;
+      &lt;/series&gt;
+      &lt;series name="Armut"&gt;
+        &lt;point label="Ocak" value="80" /&gt;
+      &lt;/series&gt;
+    &lt;/chart&gt;
+  &lt;/sheet&gt;
+&lt;/excel&gt;
+</pre>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>

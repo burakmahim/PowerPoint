@@ -78,7 +78,120 @@
 		<chart type="Pie" title="Stok Dağılımı" dataRange="B2:C4" />
 	</sheet>
 </excel>
+
+
 	
 	
+	her bir eiket arasında bir boşluk var
+	
+	<excel>
+		<sheet name="Satış Raporu">
+
+			<!-- Tablomuz -->
+			<table>
+				<row>
+					<cell bold="true">Ay</cell>
+					<cell bold="true">Gelir</cell>
+					<cell bold="true">Gider</cell>
+				</row>
+				<row>
+					<cell>Ocak</cell>
+					<cell>1000</cell>
+					<cell>400</cell>
+				</row>
+				<row>
+					<cell>Şubat</cell>
+					<cell>1200</cell>
+					<cell>500</cell>
+				</row>
+				<row>
+					<cell>Mart</cell>
+					<cell>1500</cell>
+					<cell>700</cell>
+				</row>
+			</table>
+
+			<!-- Grafik otomatik tablo altına çizilir -->
+			<chart type="Column" title="Aylık Gelir-Gider" xAxis="Ay" yAxis="Tutar" />
+
+			<!-- Yeni tablo, önceki grafik altına gelir -->
+			<table>
+				<row>
+					<cell bold="true">Ürün</cell>
+					<cell bold="true">Stok</cell>
+				</row>
+				<row>
+					<cell>Kalem</cell>
+					<cell>120</cell>
+				</row>
+				<row>
+					<cell>Defter</cell>
+					<cell>90</cell>
+				</row>
+				<row>
+					<cell>Silgi</cell>
+					<cell>50</cell>
+				</row>
+			</table>
+
+			<!-- Pie grafik bu tablonun altına otomatik yerleşir -->
+			<chart type="Pie" title="Stok Dağılımı" />
+
+		</sheet>
+	</excel>
+
+
+
+	birden fazla table için birden fazla grafik
+	
+	<excel>
+		<sheet name="Finansal Rapor">
+
+			<table name="GelirTablosu" startCell="A1">
+				<row>
+					<cell bold="true">Ay</cell>
+					<cell bold="true">Gelir</cell>
+				</row>
+				<row>
+					<cell>Ocak</cell>
+					<cell>1000</cell>
+				</row>
+				<row>
+					<cell>Şubat</cell>
+					<cell>1200</cell>
+				</row>
+				<row>
+					<cell>Mart</cell>
+					<cell>1500</cell>
+				</row>
+			</table>
+
+			<table name="GiderTablosu" startCell="A6">
+				<row>
+					<cell bold="true">Ay</cell>
+					<cell bold="true">Gider</cell>
+				</row>
+				<row>
+					<cell>Ocak</cell>
+					<cell>400</cell>
+				</row>
+				<row>
+					<cell>Şubat</cell>
+					<cell>500</cell>
+				</row>
+				<row>
+					<cell>Mart</cell>
+					<cell>700</cell>
+				</row>
+			</table>
+
+			<chart title="Aylık Gelir Grafiği" type="Column" xAxis="Ay" yAxis="Gelir" sourceTable="GelirTablosu" />
+			<chart title="Aylık Gider Grafiği" type="Column" xAxis="Ay" yAxis="Gider" sourceTable="GiderTablosu" />
+
+		</sheet>
+	</excel>
+
+
+
 </excels>
 	
