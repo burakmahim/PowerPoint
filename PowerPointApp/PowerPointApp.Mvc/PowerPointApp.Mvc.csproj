@@ -198,10 +198,6 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Presentation\ViewPdf.cshtml" />
-    <Content Include="Views\Presentation\UpdateFromXml.cshtml" />
-    <Content Include="Views\Presentation\LiveXmlEditor.cshtml" />
-    <Content Include="Views\Presentation\EditXml.cshtml" />
     <Content Include="Views\Presentation\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>

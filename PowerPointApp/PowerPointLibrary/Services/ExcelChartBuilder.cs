@@ -25,7 +25,7 @@ namespace PowerPointLibrary.Services
             chart.PrimaryCategoryAxis.Title = chartElement.Attribute("xAxis")?.Value ?? "";
             chart.PrimaryValueAxis.Title = chartElement.Attribute("yAxis")?.Value ?? "";
 
-            // 1️⃣ sourceTable ile veri seçimi
+            // 1️⃣ sourceTable ile veri seçimi 
             var sourceTableName = chartElement.Attribute("sourceTable")?.Value;
             if (!string.IsNullOrWhiteSpace(sourceTableName) && tableMap.ContainsKey(sourceTableName))
             {
@@ -39,13 +39,13 @@ namespace PowerPointLibrary.Services
                 chart.IsSeriesInRows = false;
             }
             // 2️⃣ dataRange ile manuel aralık seçimi
-            else if (!string.IsNullOrEmpty(chartElement.Attribute("dataRange")?.Value))
+            if (!string.IsNullOrEmpty(chartElement.Attribute("dataRange")?.Value))
             {
                 chart.DataRange = sheet.Range[chartElement.Attribute("dataRange")?.Value];
                 chart.IsSeriesInRows = false;
             }
             // 3️⃣ series ile manuel veri girişi
-            else if (chartElement.Elements("series").Any())
+            if (chartElement.Elements("series").Any())
             {
                 var seriesList = chartElement.Elements("series").ToList();
                 for (int s = 0; s < seriesList.Count; s++)

@@ -7,13 +7,9 @@ using System.Collections.Generic;
 using PowerPointLibrary.Helpers;
 using PowerPointLibrary.Services;
 using PowerPointLibrary.Exceptions;
-
-
-
-
-#if NET48 || NET9_0
 using Syncfusion.XlsIO;
-#endif
+
+
 
 namespace PowerPointLibrary
 {
@@ -22,7 +18,6 @@ namespace PowerPointLibrary
 
         public static byte[] CreateExcelFromCustomXml(string xmlContent)
         {
-#if NET48 || NET9_0
             try
             {
                 using ExcelEngine excelEngine = new ExcelEngine();
@@ -43,16 +38,27 @@ namespace PowerPointLibrary
 
                     var tableMap = new Dictionary<string, (int StartRow, int StartCol, int RowCount, int ColCount)>();
 
-                    foreach (XElement table in sheetXml.Elements("table"))
+                    // Sırayla tüm alt elemanları işle
+                    foreach (XElement element in sheetXml.Elements())
                     {
-                        currentRow = ExcelTableBuilder.AddTable(table, sheet, currentRow, currentColumn, tableMap);
-                        currentRow += 1;
-                    }
+                        switch (element.Name.LocalName)
+                        {
+                            case "table":
+                                currentRow = ExcelTableBuilder.AddTable(element, sheet, currentRow, currentColumn, tableMap);
+                                currentRow += 1; // tablo sonrası boşluk
+                                break;
 
-                    foreach (XElement chartElement in sheetXml.Elements("chart"))
-                    {
-                        ExcelChartBuilder.AddChart(chartElement, sheet, currentRow, tableMap);
-                        currentRow += 22;
+                            case "chart":
+                                ExcelChartBuilder.AddChart(element, sheet, currentRow, tableMap);
+                                currentRow += 22; // grafik yüksekliği kadar boşluk
+                                break;
+
+                            // Eğer başka özel elemanlar varsa buraya eklenebilir
+                            default:
+                                // Bilinmeyen bir eleman varsa geç ve satır atla
+                                currentRow += 1;
+                                break;
+                        }
                     }
 
                     pageCounter++;
@@ -66,10 +72,8 @@ namespace PowerPointLibrary
             {
                 throw new ExcelGenerationException("Excel oluşturulurken bir hata meydana geldi.", ex);
             }
-#else
-    throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
-#endif
         }
+
 
 
     }

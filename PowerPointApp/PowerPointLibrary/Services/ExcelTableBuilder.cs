@@ -19,31 +19,49 @@ namespace PowerPointLibrary.Services
             }
 
             List<XElement> rows = table.Elements("row").ToList();
+
             for (int rowIndex = 0; rowIndex < rows.Count; rowIndex++)
             {
                 List<XElement> cells = rows[rowIndex].Elements("cell").ToList();
                 for (int colIndex = 0; colIndex < cells.Count; colIndex++)
                 {
                     IRange cell = sheet[startRow + rowIndex, startCol + colIndex];
-                    string value = cells[colIndex].Value;
+                    XElement cellElement = cells[colIndex];
+                    string value = cellElement.Value?.Trim() ?? "";
+                    string? formula = cellElement.Attribute("formula")?.Value;
+
 
                     if (double.TryParse(value, out double numericValue))
                         cell.Number = numericValue;
                     else
                         cell.Text = value;
 
+                    if (!string.IsNullOrEmpty(formula))
+                    {
+                        cell.Formula = formula;
+                    }
+
                     if (cells[colIndex].Attribute("bold")?.Value == "true")
                         cell.CellStyle.Font.Bold = true;
                 }
             }
 
-            // tablo adı alınır ve map'e eklenir
+            // 📌 Tablo bilgisi map'e ekleniyor
             string? name = table.Attribute("name")?.Value;
             if (!string.IsNullOrWhiteSpace(name))
-                tableMap[name] = (startRow, startCol, rows.Count, rows.Max(r => r.Elements("cell").Count()));
+            {
+                int rowCount = rows.Count;
+                int colCount = rows.Max(r => r.Elements("cell").Count());
+                tableMap[name] = (startRow, startCol, rowCount, colCount);
+            }
+
+            // 📊 Formüller hesaplanır
+            sheet.EnableSheetCalculations();
+            sheet.Calculate();
 
             sheet.UsedRange.AutofitColumns();
             return startRow + rows.Count;
         }
     }
 }
+

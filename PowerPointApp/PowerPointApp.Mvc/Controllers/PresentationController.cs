@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Web.Mvc;
 using PowerPointLibrary;
+using PowerPointLibrary.Exceptions;
 
 namespace PowerPointApp.Mvc.Controllers
 {
@@ -30,6 +31,8 @@ namespace PowerPointApp.Mvc.Controllers
                 return Content("Hata oluştu: " + ex.Message);
             }
         }
+
+
 
         [HttpPost]
         [ValidateInput(false)]

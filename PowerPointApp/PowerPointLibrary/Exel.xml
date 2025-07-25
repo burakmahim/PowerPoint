@@ -5,7 +5,7 @@
 		
 <excel>
 	<sheet name="Satış Raporu">
-		<table startCell="A1">
+		<table name="veri" startCell="A1">
 			<row>
 				<cell bold="true">Ay</cell>
 				<cell bold="true">Gelir</cell>
@@ -28,117 +28,11 @@
 			</row>
 		</table>
 
-		<chart type="Column" title="Aylık Gelir-Gider" xAxis="Ay" yAxis="Tutar" />
+		<chart type="Column" title="Aylık Gelir-Gider" xAxis="Ay" yAxis="Tutar" sourceTable="veri" />
 	</sheet>
 </excel>
 
 
-
-	
-	elle grafik
-
-<excel>
-	<sheet name="Sıcaklık">
-		<chart type="Line" title="Günlük Sıcaklıklar" xAxis="Gün" yAxis="°C">
-			<series name="İstanbul">
-				<point label="Pzt" value="25" />
-				<point label="Salı" value="27" />
-				<point label="Çarş" value="28" />
-			</series>
-			<series name="Ankara">
-				<point label="Pzt" value="20" />
-				<point label="Salı" value="21" />
-				<point label="Çarş" value="22" />
-			</series>
-		</chart>
-	</sheet>
-</excel>
-
-
-
-	
-	belli bir bölgeyi kapsayan
-	
-<excel>
-	<sheet name="Hazır Aralık">
-		<table startCell="B2">
-			<row>
-				<cell>Ürün</cell>
-				<cell>Stok</cell>
-			</row>
-			<row>
-				<cell>Kalem</cell>
-				<cell>120</cell>
-			</row>
-			<row>
-				<cell>Defter</cell>
-				<cell>90</cell>
-			</row>
-		</table>
-		<chart type="Pie" title="Stok Dağılımı" dataRange="B2:C4" />
-	</sheet>
-</excel>
-
-
-	
-	
-	her bir eiket arasında bir boşluk var
-	
-	<excel>
-		<sheet name="Satış Raporu">
-
-			<!-- Tablomuz -->
-			<table>
-				<row>
-					<cell bold="true">Ay</cell>
-					<cell bold="true">Gelir</cell>
-					<cell bold="true">Gider</cell>
-				</row>
-				<row>
-					<cell>Ocak</cell>
-					<cell>1000</cell>
-					<cell>400</cell>
-				</row>
-				<row>
-					<cell>Şubat</cell>
-					<cell>1200</cell>
-					<cell>500</cell>
-				</row>
-				<row>
-					<cell>Mart</cell>
-					<cell>1500</cell>
-					<cell>700</cell>
-				</row>
-			</table>
-
-			<!-- Grafik otomatik tablo altına çizilir -->
-			<chart type="Column" title="Aylık Gelir-Gider" xAxis="Ay" yAxis="Tutar" />
-
-			<!-- Yeni tablo, önceki grafik altına gelir -->
-			<table>
-				<row>
-					<cell bold="true">Ürün</cell>
-					<cell bold="true">Stok</cell>
-				</row>
-				<row>
-					<cell>Kalem</cell>
-					<cell>120</cell>
-				</row>
-				<row>
-					<cell>Defter</cell>
-					<cell>90</cell>
-				</row>
-				<row>
-					<cell>Silgi</cell>
-					<cell>50</cell>
-				</row>
-			</table>
-
-			<!-- Pie grafik bu tablonun altına otomatik yerleşir -->
-			<chart type="Pie" title="Stok Dağılımı" />
-
-		</sheet>
-	</excel>
 
 
 
@@ -172,15 +66,15 @@
 					<cell bold="true">Gider</cell>
 				</row>
 				<row>
-					<cell>Ocak</cell>
+					<cell>zxczxc</cell>
 					<cell>400</cell>
 				</row>
 				<row>
-					<cell>Şubat</cell>
+					<cell>Şuxczxcbat</cell>
 					<cell>500</cell>
 				</row>
 				<row>
-					<cell>Mart</cell>
+					<cell>Mczxcart</cell>
 					<cell>700</cell>
 				</row>
 			</table>
@@ -191,7 +85,165 @@
 		</sheet>
 	</excel>
 
+	
+	ÇALIŞAN FORMULLER VE GRAFİK
 
+	<excel>
+		<sheet name="Hesaplama">
+			<table name="Hesaplama" startCell="A1">
+				<row>
+					
+					<cell bold="true">Değer 1</cell>
+					<cell bold="true">Değer 2</cell>
+					<cell bold="true">Toplam</cell>
+					<cell bold="true">Çarpım</cell>
+					<cell bold="true">Fark</cell>
+					<cell bold="true">Bölüm</cell>
+				</row>
+				<row>
+					<cell>5</cell>
+					<cell>10</cell>
+					<cell formulaByOperation="toplama" applyTo="row" startIndex="0" endIndex="1"/>
+					<cell formulaByOperation="çarpma" applyTo="row" startIndex="0" endIndex="1"/>
+					<cell formulaByOperation="çıkartma" applyTo="row" startIndex="1" endIndex="0"/>
+					<cell formulaByOperation="bölme" applyTo="row" startIndex="1" endIndex="0"/>
+				</row>
+				<row>
+					<cell>12</cell>
+					<cell>4</cell>
+					<cell formulaByOperation="toplama" applyTo="row" startIndex="0" endIndex="1"/>
+					<cell formulaByOperation="çarpma" applyTo="row" startIndex="0" endIndex="1"/>
+					<cell formulaByOperation="çıkartma" applyTo="row" startIndex="0" endIndex="1"/>
+					<cell formulaByOperation="bölme" applyTo="row" startIndex="0" endIndex="1"/>
+				</row>
+			</table>
+
+			<chart type="Column" title="Hesaplama Sonuçları" xAxis="İşlem" yAxis="Değer" sourceTable="Hesaplama"/>
+		</sheet>
+	</excel>
+
+
+
+	formül
+
+	<excel>
+		<sheet>
+			<table name="Hesaplama">
+				<row>
+					<cell bold="true">Açıklama</cell>
+					<cell bold="true">Değer 1</cell>
+					<cell bold="true">Değer 2</cell>
+					<cell bold="true">Sonuç</cell>
+				</row>
+
+				<row>
+					<cell>Toplama</cell>
+					<cell>10</cell>
+					<cell>20</cell>
+					<cell formula="=B2+C2"></cell>
+				</row>
+				<row>
+					<cell>Çıkarma</cell>
+					<cell>50</cell>
+					<cell>30</cell>
+					<cell formula="=B3-C3"></cell>
+				</row>
+
+				<row>
+					<cell>Çarpma</cell>
+					<cell>5</cell>
+					<cell>4</cell>
+					<cell formula="=B4*C4"></cell>
+				</row>
+
+				<row>
+					<cell>Bölme</cell>
+					<cell>100</cell>
+					<cell>25</cell>
+					<cell formula="=B5/C5"></cell>
+				</row>
+				<row>
+					<cell>Ortalama</cell>
+					<cell>80</cell>
+					<cell>100</cell>
+					<cell formula="=AVERAGE(B6:C6)"></cell>
+				</row>
+
+				<row>
+					<cell>En Küçük</cell>
+					<cell>15</cell>
+					<cell>5</cell>
+					<cell formula="=MIN(B7:C7)"></cell>
+				</row>
+
+				<row>
+					<cell>En Büyük</cell>
+					<cell>33</cell>
+					<cell>77</cell>
+					<cell formula="=MAX(B8:C8)"></cell>
+				</row>
+
+				<row>
+					<cell>Geçti mi?</cell>
+					<cell>60</cell>
+					<cell></cell>
+					<cell formula="=IF(B9&gt;=50, &quot;Geçti&quot;, &quot;Kaldı&quot;)"></cell>
+				</row>
+				<row>
+					<cell>Yuvarlama</cell>
+					<cell>3,14159</cell>
+					<cell></cell>
+					<cell formula="=ROUND(B10; 2)"></cell>
+				</row>
+
+				<row>
+					<cell>Mod (kalan)</cell>
+					<cell>17</cell>
+					<cell>4</cell>
+					<cell formula="=MOD(B11; C11)"></cell>
+				</row>
+
+				<row>
+					<cell>Metin uzunluğu</cell>
+					<cell>Merhaba</cell>
+					<cell></cell>
+					<cell formula="=LEN(B12)"></cell>
+				</row>
+
+				<row>
+					<cell>Ad + Soyad</cell>
+					<cell>Ali</cell>
+					<cell>Veli</cell>
+					<cell formula="=B13 &amp; &quot; &quot; &amp; C13"></cell>
+				</row>
+
+				<row>
+					<cell>Bugünün Tarihi</cell>
+					<cell></cell>
+					<cell></cell>
+					<cell formula="=TODAY()"></cell>
+				</row>
+
+				<row>
+					<cell>Şu An</cell>
+					<cell></cell>
+					<cell></cell>
+					<cell formula="=NOW()"></cell>
+				</row>
+
+				<row>
+					<cell>Hata varsa mesaj</cell>
+					<cell>0</cell>
+					<cell></cell>
+					<cell formula="=IFERROR(10/B17; &quot;Hata&quot;)"></cell>
+				</row>
+			</table>
+
+			<chart type="Column" title="Hesaplama Sonuçları" xAxis="İşlem" yAxis="Değer" sourceTable="Hesaplama"/>
+
+		</sheet>
+	</excel>
+	
 
 </excels>
 	
