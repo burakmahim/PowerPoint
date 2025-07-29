@@ -2,21 +2,21 @@
 using System.IO;
 using System.Text;
 using System.Web.Mvc;
+using Microsoft.SqlServer.Server;
 using PowerPointLibrary;
-using PowerPointLibrary.Exceptions;
+using PowerPointLibrary.Services;
 
 namespace PowerPointApp.Mvc.Controllers
 {
     public class PresentationController : Controller
     {
-        // GET: /Presentation/
         public ActionResult Index()
         {
             return View();
         }
 
         [HttpPost]
-        [ValidateInput(false)] // <--- Zararlı olarak algılanabilecek karakterleri kabul et
+        [ValidateInput(false)]
         public ActionResult DownloadPptx(string xmlContent)
         {
             try
@@ -31,8 +31,6 @@ namespace PowerPointApp.Mvc.Controllers
                 return Content("Hata oluştu: " + ex.Message);
             }
         }
-
-
 
         [HttpPost]
         [ValidateInput(false)]
@@ -64,7 +62,6 @@ namespace PowerPointApp.Mvc.Controllers
                 return View("Index");
             }
 
-
             try
             {
                 byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
@@ -77,69 +74,31 @@ namespace PowerPointApp.Mvc.Controllers
             }
         }
 
-
-
         [HttpPost]
-        public ActionResult GeneratePptx(string xmlContent)
+        [ValidateInput(false)]
+        public ActionResult GenerateExcelPdf(string xmlContent)
         {
-            if (string.IsNullOrWhiteSpace(xmlContent))
-                return new HttpStatusCodeResult(400, "XML içeriği boş olamaz.");
-
             try
             {
-                byte[] pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-                return File(pptBytes,
-                            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                            "presentation.pptx");
+                byte[] pdfBytes = ExcelConverter.ConvertToPdf(xmlContent);
+
+                // BASE64 stringe dönüştür
+                string base64Pdf = Convert.ToBase64String(pdfBytes);
+
+                // ViewBag ile View'a gönder
+                ViewBag.EmbeddedPdf = "data:application/pdf;base64," + base64Pdf;
+                ViewBag.XmlContent = xmlContent; // XML içeriği de formda kalsın
+
+                return View("Index");
             }
             catch (Exception ex)
             {
-                return new HttpStatusCodeResult(500, $"Sunum oluşturulamadı: {ex.Message}");
+                ViewBag.Error = "PDF oluşturulamadı: " + ex.Message;
+                return View("Index");
             }
         }
 
-        [HttpPost]
-        public ActionResult GeneratePdf(string xmlContent)
-        {
-            if (string.IsNullOrWhiteSpace(xmlContent))
-                return new HttpStatusCodeResult(400, "XML içeriği boş olamaz.");
 
-            try
-            {
-                byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
-                return File(pdfBytes, "application/pdf", "presentation.pdf");
-            }
-            catch (Exception ex)
-            {
-                return new HttpStatusCodeResult(500, $"PDF dönüştürme başarısız: {ex.Message}");
-            }
-        }
-
-        [HttpPost]
-        [ValidateInput(false)] // 🛡 Bu satır HTML/XML içeriği kabul eder
-        public ActionResult Generate(string xmlContent, string format)
-        {
-            if (string.IsNullOrWhiteSpace(xmlContent))
-                return Content("XML içeriği boş olamaz.");
-
-            byte[] result;
-            string mime, filename;
-
-            if (format == "pdf")
-            {
-                result = PowerPointGenerator.ConvertToPdf(xmlContent);
-                mime = "application/pdf";
-                filename = "sunum.pdf";
-            }
-            else
-            {
-                result = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-                mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                filename = "sunum.pptx";
-            }
-
-            return File(result, mime, filename);
-        }
 
     }
 }

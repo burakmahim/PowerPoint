@@ -241,6 +241,7 @@
 
 			<chart type="Column" title="Hesaplama Sonuçları" xAxis="İşlem" yAxis="Değer" sourceTable="Hesaplama"/>
 
+
 		</sheet>
 	</excel>
 	

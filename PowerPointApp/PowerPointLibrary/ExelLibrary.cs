@@ -4,11 +4,21 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using PowerPointLibrary.Helpers;
-using PowerPointLibrary.Services;
 using PowerPointLibrary.Exceptions;
+using Syncfusion.Pdf;
 using Syncfusion.XlsIO;
+using Syncfusion.Presentation;
+using PowerPointLibrary.Services;
 
+//using Syncfusion.PresentationToPdfConverter;
+
+
+
+#if NET48
+using Syncfusion.ExcelToPdfConverter;
+#elif NET9_0
+using Syncfusion.XlsIORenderer;
+#endif
 
 
 namespace PowerPointLibrary
@@ -73,6 +83,7 @@ namespace PowerPointLibrary
                 throw new ExcelGenerationException("Excel oluşturulurken bir hata meydana geldi.", ex);
             }
         }
+
 
 
 

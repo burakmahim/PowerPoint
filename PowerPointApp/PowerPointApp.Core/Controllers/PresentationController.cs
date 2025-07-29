@@ -2,6 +2,7 @@
 using System.Text;
 using PowerPointLibrary;
 using PowerPointLibrary.Exceptions;
+using PowerPointLibrary.Services;
 
 
 namespace PowerPointApp.Core.Controllers
@@ -60,6 +61,27 @@ namespace PowerPointApp.Core.Controllers
                 return StatusCode(500, $"Beklenmeyen hata: {ex.Message}");
             }
         }
+
+        [HttpPost]
+        public IActionResult PreviewExcelPdf([FromForm] string xmlContent)
+        {
+            if (string.IsNullOrWhiteSpace(xmlContent))
+                return BadRequest("XML içeriği boş olamaz.");
+
+            try
+            {
+                byte[] excelBytes = ExcelLibrary.CreateExcelFromCustomXml(xmlContent);
+                byte[] pdfBytes = ExcelConverter.ConvertExcelToPdf(excelBytes);
+
+                Response.Headers["Content-Disposition"] = "inline; filename=veriler.pdf";
+                return File(pdfBytes, "application/pdf");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"PDF görüntülenemedi: {ex.Message}");
+            }
+        }
+
 
         [HttpPost]
         public IActionResult Generate([FromForm] string xmlContent, [FromForm] string format)

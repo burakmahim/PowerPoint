@@ -23,14 +23,15 @@
 		</EmbeddedResource>
 	</ItemGroup>
 
-	<!--.NET 9.0 için NuGet paketleri-->
+	<!-- .NET 9.0 için NuGet bağımlılıkları -->
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
 		<PackageReference Include="Syncfusion.PresentationRenderer.NET" Version="30.1.37" />
 		<PackageReference Include="Syncfusion.Pdf.NET" Version="30.1.37" />
 		<PackageReference Include="Syncfusion.Presentation.NET" Version="30.1.37" />
 		<PackageReference Include="Syncfusion.Licensing" Version="30.1.37" />
 		<PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />
-
+		<PackageReference Include="Syncfusion.XlsIO.NET" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.XlsIORenderer.NET" Version="30.1.37" />
 	</ItemGroup>
 
 	<!-- .NET Framework 4.8 için referanslar -->
@@ -38,10 +39,10 @@
 		<Reference Include="Syncfusion.Compression.Base">
 			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.Compression.Base.dll</HintPath>
 		</Reference>
-		<!--<Reference Include="Syncfusion.XlsIO.Base">
+		<Reference Include="Syncfusion.XlsIO.Base">
 			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.XlsIO.Base.dll</HintPath>
 			<Private>True</Private>
-		</Reference>-->
+		</Reference>
 		<Reference Include="Syncfusion.Licensing">
 			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.Licensing.dll</HintPath>
 		</Reference>
@@ -57,12 +58,9 @@
 		<Reference Include="Syncfusion.PresentationToPdfConverter.Base">
 			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.PresentationToPdfConverter.Base.dll</HintPath>
 		</Reference>
+		<Reference Include="Syncfusion.ExcelToPdfConverter.Base">
+			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.ExcelToPdfConverter.Base.dll</HintPath>
+		</Reference>
 	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="Syncfusion.XlsIO.NET" Version="30.1.37" />
-	</ItemGroup>
-
-
-
 
 </Project>
