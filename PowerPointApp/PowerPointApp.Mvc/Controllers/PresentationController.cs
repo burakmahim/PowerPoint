@@ -65,11 +65,17 @@ namespace PowerPointApp.Mvc.Controllers
             try
             {
                 byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
-                return File(pdfBytes, "application/pdf");
+                // BASE64 stringe dönüştür
+                string base64Pdf = Convert.ToBase64String(pdfBytes);
+
+                // ViewBag ile View'a gönder
+                ViewBag.PowerPointPdf = "data:application/pdf;base64," + base64Pdf;
+                ViewBag.XmlContent = xmlContent;
+                return View("Index");
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
+                ViewBag.Error = "PDF oluşturulamadı: " + ex.Message;
                 return View("Index");
             }
         }
@@ -86,10 +92,10 @@ namespace PowerPointApp.Mvc.Controllers
                 string base64Pdf = Convert.ToBase64String(pdfBytes);
 
                 // ViewBag ile View'a gönder
-                ViewBag.EmbeddedPdf = "data:application/pdf;base64," + base64Pdf;
-                ViewBag.XmlContent = xmlContent; // XML içeriği de formda kalsın
-
+                ViewBag.ExcelPdf = "data:application/pdf;base64," + base64Pdf;
+                ViewBag.XmlContent = xmlContent;
                 return View("Index");
+
             }
             catch (Exception ex)
             {

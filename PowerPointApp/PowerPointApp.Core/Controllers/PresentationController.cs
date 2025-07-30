@@ -13,105 +13,89 @@ namespace PowerPointApp.Core.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return View(); // Views/Presentation/Index.cshtml
+            return View();
         }
 
         [HttpPost]
-        public IActionResult DownloadPptx([FromForm] string xmlContent)
+        [ValidateAntiForgeryToken]
+        public IActionResult DownloadPptx(string xmlContent)
         {
-            if (string.IsNullOrWhiteSpace(xmlContent))
-                return BadRequest("XML içeriği boş olamaz.");
-
             try
             {
-                var pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-                return File(
-                    pptBytes,
+                byte[] pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+                return File(pptBytes,
                     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                    "Sunum.pptx"
-                );
+                    "Sunum.pptx");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"PowerPoint oluşturulamadı: {ex.Message}");
+                return Content("Hata oluştu: " + ex.Message);
             }
         }
 
         [HttpPost]
-        public IActionResult GenerateExcelFromXml([FromForm] string xmlContent)
+        [ValidateAntiForgeryToken]
+        public IActionResult GenerateExcelFromXml(string xmlContent)
         {
             if (string.IsNullOrWhiteSpace(xmlContent))
-                return BadRequest("XML içeriği boş olamaz.");
+                return BadRequest("XML boş olamaz.");
 
             try
             {
                 byte[] result = ExcelLibrary.CreateExcelFromCustomXml(xmlContent);
-                return File(
-                    result,
-                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    "veriler.xlsx"
-                );
-            }
-            catch (ExcelGenerationException ex)
-            {
-                return StatusCode(500, $"Excel hatası: {ex.Message}");
+                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "veriler.xlsx");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Beklenmeyen hata: {ex.Message}");
+                return StatusCode(500, $"Excel oluşturulamadı: {ex.Message}");
             }
         }
 
         [HttpPost]
-        public IActionResult PreviewExcelPdf([FromForm] string xmlContent)
+        [ValidateAntiForgeryToken]
+        public IActionResult ViewPdf(string xmlContent)
         {
             if (string.IsNullOrWhiteSpace(xmlContent))
-                return BadRequest("XML içeriği boş olamaz.");
+            {
+                ViewBag.Error = "XML içeriği boş gönderildi.";
+                return View("Index");
+            }
 
             try
             {
-                byte[] excelBytes = ExcelLibrary.CreateExcelFromCustomXml(xmlContent);
-                byte[] pdfBytes = ExcelConverter.ConvertExcelToPdf(excelBytes);
+                byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
+                string base64Pdf = Convert.ToBase64String(pdfBytes);
 
-                Response.Headers["Content-Disposition"] = "inline; filename=veriler.pdf";
-                return File(pdfBytes, "application/pdf");
+                ViewBag.PowerPointPdf = "data:application/pdf;base64," + base64Pdf;
+                ViewBag.XmlContent = xmlContent;
+
+                return View("Index");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"PDF görüntülenemedi: {ex.Message}");
+                ViewBag.Error = "PDF oluşturulamadı: " + ex.Message;
+                return View("Index");
             }
         }
 
-
         [HttpPost]
-        public IActionResult Generate([FromForm] string xmlContent, [FromForm] string format)
+        [ValidateAntiForgeryToken]
+        public IActionResult GenerateExcelPdf(string xmlContent)
         {
-            if (string.IsNullOrWhiteSpace(xmlContent))
-                return BadRequest("XML içeriği boş olamaz.");
-
             try
             {
-                byte[] result;
-                string mime, filename;
+                byte[] pdfBytes = ExcelConverter.ConvertToPdf(xmlContent);
+                string base64Pdf = Convert.ToBase64String(pdfBytes);
 
-                if (format?.ToLowerInvariant() == "pdf")
-                {
-                    result = PowerPointGenerator.ConvertToPdf(xmlContent);
-                    mime = "application/pdf";
-                    filename = "sunum.pdf";
-                }
-                else
-                {
-                    result = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-                    mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                    filename = "sunum.pptx";
-                }
+                ViewBag.ExcelPdf = "data:application/pdf;base64," + base64Pdf;
+                ViewBag.XmlContent = xmlContent;
 
-                return File(result, mime, filename);
+                return View("Index");
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Dosya oluşturulamadı: {ex.Message}");
+                ViewBag.Error = "PDF oluşturulamadı: " + ex.Message;
+                return View("Index");
             }
         }
     }

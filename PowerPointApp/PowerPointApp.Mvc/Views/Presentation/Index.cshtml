@@ -32,7 +32,7 @@
                 PowerPoint Olarak İndir
             </button>
 
-            <button type="submit" class="btn btn-success me-2" formaction="/Presentation/ViewPdf" formtarget="_blank">
+            <button type="submit" class="btn btn-success me-2" formaction="/Presentation/ViewPdf" >
                 PDF Olarak Görüntüle
             </button>
 
@@ -44,12 +44,20 @@
                 Pdf Görüntüle(Excel)
             </button>
 
-            @if (ViewBag.EmbeddedPdf != null)
+            @if (ViewBag.PowerPointPdf != null)
             {
                 <hr />
-                <h4>📄 Oluşturulan PDF:</h4>
-                <iframe src="@ViewBag.EmbeddedPdf" width="100%" height="800px" style="border: 1px solid #ccc;"></iframe>
+                <h4>📊 PowerPoint PDF:</h4>
+                <iframe src="@ViewBag.PowerPointPdf" width="100%" height="600px" style="border: 1px solid #ccc;"></iframe>
             }
+
+            @if (ViewBag.ExcelPdf != null)
+            {
+                <hr />
+                <h4>📈 Excel PDF:</h4>
+                <iframe src="@ViewBag.ExcelPdf" width="100%" height="600px" style="border: 1px solid #ccc;"></iframe>
+            }
+
 
         </div>
     </form>

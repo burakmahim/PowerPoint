@@ -8,8 +8,11 @@ using Syncfusion.Pdf;
 using Syncfusion.XlsIO;
 
 
+
 #if NET48
 using Syncfusion.ExcelToPdfConverter;
+using Syncfusion.ExcelChartToImageConverter;
+
 #elif NET9_0
 using Syncfusion.XlsIORenderer;
 #endif
@@ -37,6 +40,7 @@ namespace PowerPointLibrary.Services
             {
                 LayoutOptions = LayoutOptions.FitSheetOnOnePage
             };
+            converter.ChartToImageConverter = new ChartToImageConverter();
 
             PdfDocument pdfDocument = converter.Convert(settings);
 

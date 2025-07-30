@@ -61,6 +61,7 @@
 		<Reference Include="Syncfusion.ExcelToPdfConverter.Base">
 			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.ExcelToPdfConverter.Base.dll</HintPath>
 		</Reference>
+		<PackageReference Include="Syncfusion.ExcelChartToImageConverter.WinForms" Version="30.1.37" />
 	</ItemGroup>
 
 </Project>
