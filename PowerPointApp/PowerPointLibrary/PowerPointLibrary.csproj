@@ -32,7 +32,21 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-		<Reference Include="Syncfusion.Compression.Base">
+		<PackageReference Include="Syncfusion.ExcelChartToImageConverter.AspNet.Mvc5" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.ExcelToPdfConverter.AspNet.Mvc5" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.OfficeChartToImageConverter.AspNet.Mvc5" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Pdf.AspNet.Mvc5" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.PdfToImageConverter.AspNet.Mvc5" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Presentation.AspNet.Mvc5" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.PresentationToPdfConverter.AspNet.Mvc5" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.XlsIO.AspNet.Mvc5" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.ExcelChartToImageConverter.WinForms" Version="30.1.37" />
+		<PackageReference Include="Syncfusion.Licensing" Version="30.1.37" />
+	</ItemGroup>
+
+</Project>
+
+<!--<Reference Include="Syncfusion.Compression.Base">
 			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.Compression.Base.dll</HintPath>
 		</Reference>
 		<Reference Include="Syncfusion.Licensing">
@@ -58,10 +72,4 @@
 		</Reference>
 		<Reference Include="Syncfusion.OfficeChartToImageConverter.Wpf">
 			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.OfficeChartToImageConverter.WPF.dll</HintPath>
-		</Reference>
-		<PackageReference Include="Syncfusion.ExcelChartToImageConverter.WinForms" Version="30.1.37" />
-	</ItemGroup>
-
-
-</Project>
-
+		</Reference>-->

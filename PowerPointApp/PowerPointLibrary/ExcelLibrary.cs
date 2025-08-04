@@ -25,7 +25,6 @@ namespace PowerPointLibrary
     {
         public static byte[] CreateExcelFromCustomXml(string xmlContent)
         {
-
             try
             {
                 using ExcelEngine excelEngine = new ExcelEngine();
@@ -43,33 +42,67 @@ namespace PowerPointLibrary
                     IWorksheet sheet = workbook.Worksheets.Create(sheetName);
                     sheet.EnableSheetCalculations();
 
-                    IRange startRange = sheet.Range["A1"];
+                    int currentRow = 1;
+                    Dictionary<string, IRange> tableRanges = new Dictionary<string, IRange>();
+                    Dictionary<string, int> tableRowCounts = new Dictionary<string, int>();
+                    Dictionary<string, int> tableColCounts = new Dictionary<string, int>();
 
-                    int rowCount = 0;
-                    int colCount = 0;
+                    IRange lastTableRange = sheet.Range["A1"];
+                    int lastRowCount = 0;
+                    int lastColCount = 0;
 
-                    IEnumerable<XElement> tables = sheetXml.Elements("table");
-
-                    if (tables != null)
+                    foreach (XElement element in sheetXml.Elements())
                     {
-                        foreach (XElement table in tables)
+                        if (element.Name == "table")
                         {
-                            TableBuilder.AddTable(table, sheet, out rowCount, out colCount);
+                            if (element.Attribute("startCell") == null)
+                            {
+                                element.SetAttributeValue("startCell", $"A{currentRow}");
+                            }
+
+                            IRange tableRange = TableBuilder.AddTable(element, sheet, out int rowCount, out int colCount);
+
+                            string? tableName = element.Attribute("name")?.Value;
+                            if (!string.IsNullOrEmpty(tableName))
+                            {
+                                tableRanges[tableName] = tableRange;
+                                tableRowCounts[tableName] = rowCount;
+                                tableColCounts[tableName] = colCount;
+                            }
+
+                            lastTableRange = tableRange;
+                            lastRowCount = rowCount;
+                            lastColCount = colCount;
+
+                            currentRow = tableRange.Row + rowCount + 1;
                         }
-                    }
+                        else if (element.Name == "chart")
+                        {
+                            int chartWidth = int.TryParse(element.Attribute("chartWidth")?.Value, out int w) ? w : 10;
+                            int chartHeight = int.TryParse(element.Attribute("chartHeight")?.Value, out int h) ? h : 15;
 
-                    IEnumerable<XElement> charts = sheetXml.Elements("chart");
+                            string? sourceTable = element.Attribute("sourceTable")?.Value;
+                            IRange chartTableRange = lastTableRange;
+                            int chartRowCount = lastRowCount;
+                            int chartColCount = lastColCount;
 
-                    int currentTopRow = startRange.Row + rowCount + 1;
+                            if (!string.IsNullOrEmpty(sourceTable) && tableRanges.ContainsKey(sourceTable))
+                            {
+                                chartTableRange = tableRanges[sourceTable];
+                                chartRowCount = tableRowCounts[sourceTable];
+                                chartColCount = tableColCounts[sourceTable];
 
-                    foreach (XElement chart in charts)
-                    {
-                        int chartWidth = int.TryParse(chart.Attribute("chartWidth")?.Value, out int w) ? w : 10;
-                        int chartHeight = int.TryParse(chart.Attribute("chartHeight")?.Value, out int h) ? h : 15;
+                                if (string.IsNullOrEmpty(element.Attribute("dataRange")?.Value))
+                                {
+                                    string dataRange = $"{chartTableRange.AddressLocal}:{sheet[chartTableRange.Row + chartRowCount - 1, chartTableRange.Column + chartColCount - 1].AddressLocal}";
+                                    element.SetAttributeValue("dataRange", dataRange);
+                                }
+                            }
 
-                        ChartBuilder.AddChart(chart, sheet, startRange, rowCount, colCount, currentTopRow, chartWidth, chartHeight);
+                            ChartBuilder.AddChart(element, sheet, chartTableRange, chartRowCount, chartColCount, currentRow, chartWidth, chartHeight);
 
-                        currentTopRow += chartHeight + 1;
+                            currentRow += chartHeight + 1;
+                        }
                     }
 
                     sheet.UsedRange.AutofitColumns();
@@ -82,15 +115,12 @@ namespace PowerPointLibrary
                 using MemoryStream ms = new MemoryStream();
                 workbook.SaveAs(ms);
                 return ms.ToArray();
-
             }
             catch (Exception ex)
             {
                 throw new ExcelGenerationException("Excel oluşturulurken bir hata meydana geldi.", ex);
             }
-
         }
-
 
         public static byte[] ConvertToPdf(string xmlContent)
         {

@@ -44,16 +44,13 @@ namespace PowerPointApp.Mvc.Controllers
             try
             {
                 byte[] result = ExcelLibrary.CreateExcelFromCustomXml(xmlContent);
-                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "veriler.xlsx");
+                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ExcelDosyası.xlsx");
             }
             catch (Exception ex)
             {
                 return new HttpStatusCodeResult(500, $"Excel oluşturulamadı: {ex.Message}");
             }
         }
-
-
-
 
         [HttpPost]
         [ValidateInput(false)]

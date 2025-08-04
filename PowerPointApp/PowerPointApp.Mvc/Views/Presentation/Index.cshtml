@@ -29,20 +29,36 @@
                 PowerPoint Olarak İndir
             </button>
 
-            <button type="submit" class="btn btn-success me-2" formaction="/Presentation/ViewPdf" formtarget="_blank">
-                PDF Olarak Görüntüle
+            <button type="submit"
+                    class="btn btn-success me-2"
+                    formaction="/Presentation/ViewPdf"
+                    formtarget="pdfFrame"
+                    onclick="document.getElementById('pdfContainer').classList.remove('d-none')">
+                PDF Görüntüle(PowerPoint)
             </button>
 
             <button type="submit" class="btn btn-success" formaction="/Presentation/GenerateExcelFromXml">
                 Excel Oluştur ve İndir
             </button>
 
-            <button type="submit" class="btn btn-success" formaction="/Presentation/GenerateExcelPdf">
+            <button type="submit"
+                    class="btn btn-success"
+                    formaction="/Presentation/GenerateExcelPdf"
+                    formtarget="pdfFrame"
+                    onclick="document.getElementById('pdfContainer').classList.remove('d-none')">
                 Pdf Görüntüle(Excel)
             </button>
+
         </div>
     </form>
+
+    <div class="d-none mt-4" id="pdfContainer">
+        <h4>📄 PDF Önizleme:</h4>
+        <iframe name="pdfFrame" width="100%" height="600px" style="border: 1px solid #ccc;"></iframe>
+    </div>
+
 </div>
+
 
 <script>
     const editor = CodeMirror.fromTextArea(document.getElementById("xmlEditor"), {
