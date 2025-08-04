@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 
-namespace PowerPointLibrary.Services
+namespace PowerPointLibrary.ExcelServices
 {
     public static class ExcelTableBuilder
     {

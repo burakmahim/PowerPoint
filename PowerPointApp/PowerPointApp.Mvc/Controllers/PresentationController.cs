@@ -1,10 +1,15 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using PowerPointLibrary;
+using PowerPointLibrary.ExcelServices;
+using Syncfusion.Pdf.Interactive;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using Microsoft.SqlServer.Server;
-using PowerPointLibrary;
-using PowerPointLibrary.Services;
+using System.Xml.Linq;
 
 namespace PowerPointApp.Mvc.Controllers
 {
@@ -21,7 +26,7 @@ namespace PowerPointApp.Mvc.Controllers
         {
             try
             {
-                byte[] pptBytes = PowerPointLibrary.PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+                byte[] pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
                 return File(pptBytes,
                     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
                     "Sunum.pptx");
@@ -50,6 +55,28 @@ namespace PowerPointApp.Mvc.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult ShowHtmlTable(string xmlContent)
+        {
+            try
+            {
+                // Tablolar
+                var tables = ExcelParserService.GetTablesFromXml(xmlContent);
+                ViewBag.AllTables = tables;
+
+                // Grafik-only PDF (tablolar hariç sadece grafik)
+                byte[] chartPdf = ExcelTableParser.ConvertChartOnlyToPdf(xmlContent);
+                string base64 = Convert.ToBase64String(chartPdf);
+                ViewBag.ChartOnlyPdf = "data:application/pdf;base64," + base64;
+
+                return View("ShowHtmlTable");
+            }
+            catch (Exception ex)
+            {
+                return Content("Hata oluştu: " + ex.Message);
+            }
+        }
 
 
         [HttpPost]
@@ -65,17 +92,11 @@ namespace PowerPointApp.Mvc.Controllers
             try
             {
                 byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
-                // BASE64 stringe dönüştür
-                string base64Pdf = Convert.ToBase64String(pdfBytes);
-
-                // ViewBag ile View'a gönder
-                ViewBag.PowerPointPdf = "data:application/pdf;base64," + base64Pdf;
-                ViewBag.XmlContent = xmlContent;
-                return View("Index");
+                return File(pdfBytes, "application/pdf");
             }
             catch (Exception ex)
             {
-                ViewBag.Error = "PDF oluşturulamadı: " + ex.Message;
+                ViewBag.Error = ex.Message;
                 return View("Index");
             }
         }

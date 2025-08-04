@@ -8,7 +8,7 @@ using PowerPointLibrary.Exceptions;
 using Syncfusion.Pdf;
 using Syncfusion.XlsIO;
 using Syncfusion.Presentation;
-using PowerPointLibrary.Services;
+using PowerPointLibrary.ExcelServices;
 
 //using Syncfusion.PresentationToPdfConverter;
 
@@ -84,6 +84,37 @@ namespace PowerPointLibrary
             }
         }
 
+        public static (IWorkbook, IWorksheet, Dictionary<string, (int, int, int, int)>) CreateWorkbookFromXml(string xmlContent)
+        {
+            ExcelEngine excelEngine = new ExcelEngine();
+            IApplication application = excelEngine.Excel;
+            application.DefaultVersion = ExcelVersion.Xlsx;
+
+            IWorkbook workbook = application.Workbooks.Create(1);
+            IWorksheet sheet = workbook.Worksheets[0];
+
+            XElement document = XElement.Parse(xmlContent);
+            Dictionary<string, (int, int, int, int)> tableMap = new();
+
+            int currentRow = 1;
+            int currentCol = 1;
+
+            foreach (XElement element in document.Elements("sheet").Elements())
+            {
+                if (element.Name == "table")
+                {
+                    currentRow = ExcelTableBuilder.AddTable(element, sheet, currentRow, currentCol, tableMap);
+                    currentRow += 1;
+                }
+                else if (element.Name == "chart")
+                {
+                    ExcelChartBuilder.AddChart(element, sheet, currentRow, tableMap);
+                    currentRow += 22;
+                }
+            }
+
+            return (workbook, sheet, tableMap);
+        }
 
 
 

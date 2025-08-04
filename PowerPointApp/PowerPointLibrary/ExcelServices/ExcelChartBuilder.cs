@@ -5,10 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using PowerPointLibrary.Helpers;
 
-
-namespace PowerPointLibrary.Services
+namespace PowerPointLibrary.ExcelServices
 {
     public static class ExcelChartBuilder
     {
@@ -20,7 +18,12 @@ namespace PowerPointLibrary.Services
             int chartStartCol = 1;
 
             var chart = sheet.Charts.Add();
-            chart.ChartType = ChartTypeParser.Parse(chartElement.Attribute("type")?.Value ?? "Column");
+            string? chartTypeStr = chartElement.Attribute("type")?.Value; 
+            if (!Enum.TryParse(chartTypeStr, true, out ExcelChartType chartType))
+            {
+                chartType = ExcelChartType.Column_Clustered;
+            }
+            chart.ChartType = chartType;
             chart.ChartTitle = chartElement.Attribute("title")?.Value ?? "";
             chart.PrimaryCategoryAxis.Title = chartElement.Attribute("xAxis")?.Value ?? "";
             chart.PrimaryValueAxis.Title = chartElement.Attribute("yAxis")?.Value ?? "";

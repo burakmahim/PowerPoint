@@ -17,7 +17,7 @@ using Syncfusion.ExcelChartToImageConverter;
 using Syncfusion.XlsIORenderer;
 #endif
 
-namespace PowerPointLibrary.Services
+namespace PowerPointLibrary.ExcelServices
 {
     public static class ExcelConverter
     {

@@ -17,11 +17,6 @@
 	</PropertyGroup>
 
 	<!-- Gömülü input.xml -->
-	<ItemGroup>
-		<EmbeddedResource Include="input.xml">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</EmbeddedResource>
-	</ItemGroup>
 
 	<!-- .NET 9.0 için NuGet bağımlılıkları -->
 	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
@@ -60,6 +55,9 @@
 		</Reference>
 		<Reference Include="Syncfusion.ExcelToPdfConverter.Base">
 			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.ExcelToPdfConverter.Base.dll</HintPath>
+		</Reference>
+		<Reference Include="Syncfusion.OfficeChartToImageConverter.Wpf">
+			<HintPath>$(SYNC_FUSION_PATH)\Syncfusion.OfficeChartToImageConverter.WPF.dll</HintPath>
 		</Reference>
 		<PackageReference Include="Syncfusion.ExcelChartToImageConverter.WinForms" Version="30.1.37" />
 	</ItemGroup>
