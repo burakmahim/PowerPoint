@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(where nuget)",
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet nuget locals:*)"
+    ],
+    "deny": []
+  }
+}
