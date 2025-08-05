@@ -1,0 +1,12 @@
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\bin\Debug\net9.0\OfficeAppLibrary.deps.json
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\bin\Debug\net9.0\OfficeAppLibrary.dll
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\bin\Debug\net9.0\OfficeAppLibrary.pdb
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\obj\Debug\net9.0\OfficeAppLibrary.csproj.AssemblyReference.cache
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\obj\Debug\net9.0\OfficeAppLibrary.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\obj\Debug\net9.0\OfficeAppLibrary.AssemblyInfoInputs.cache
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\obj\Debug\net9.0\OfficeAppLibrary.AssemblyInfo.cs
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\obj\Debug\net9.0\OfficeAppLibrary.csproj.CoreCompileInputs.cache
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\obj\Debug\net9.0\OfficeAppLibrary.dll
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\obj\Debug\net9.0\refint\OfficeAppLibrary.dll
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\obj\Debug\net9.0\OfficeAppLibrary.pdb
+C:\Users\excalibur\source\repos\OfficeApp\OfficeAppLibrary\obj\Debug\net9.0\ref\OfficeAppLibrary.dll

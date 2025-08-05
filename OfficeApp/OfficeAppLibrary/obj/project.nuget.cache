@@ -1,0 +1,99 @@
+{
+  "version": 2,
+  "dgSpecHash": "2b3kVGtkS4s=",
+  "success": false,
+  "projectFilePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.PresentationToPdfConverter.AspNet.Mvc5",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.ExcelToPdfConverter.AspNet.Mvc5",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.Presentation.AspNet.Mvc5",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.Pdf.AspNet.Mvc5",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.Licensing",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.ExcelChartToImageConverter.WinForms",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.XlsIO.AspNet.Mvc5",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.PdfToImageConverter.AspNet.Mvc5",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.OfficeChartToImageConverter.AspNet.Mvc5",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeAppLibrary\\OfficeAppLibrary.csproj",
+      "libraryId": "Syncfusion.ExcelChartToImageConverter.AspNet.Mvc5",
+      "targetGraphs": []
+    }
+  ]
+}

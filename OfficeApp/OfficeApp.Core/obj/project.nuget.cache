@@ -1,0 +1,72 @@
+{
+  "version": 2,
+  "dgSpecHash": "gTc0Q+t/zEU=",
+  "success": false,
+  "projectFilePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "libraryId": "System.Text.Encoding.CodePages",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "libraryId": "Syncfusion.Pdf.NET",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "libraryId": "Syncfusion.Licensing",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "libraryId": "Syncfusion.Presentation.NET",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "libraryId": "Syncfusion.PresentationRenderer.NET",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "libraryId": "Syncfusion.XlsIORenderer.NET",
+      "targetGraphs": []
+    },
+    {
+      "code": "NU1301",
+      "level": "Error",
+      "message": "The local source 'C:\\Program Files (x86)\\Syncfusion\\Essential Studio\\WPF\\30.1.37\\ToolboxNuGetPackages' doesn't exist.",
+      "projectPath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "filePath": "C:\\Users\\burak\\Downloads\\OfficeApp\\OfficeApp.Core\\OfficeApp.Core.csproj",
+      "libraryId": "Syncfusion.XlsIO.NET",
+      "targetGraphs": []
+    }
+  ]
+}
