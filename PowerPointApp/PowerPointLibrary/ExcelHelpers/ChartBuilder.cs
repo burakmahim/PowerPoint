@@ -24,6 +24,7 @@ namespace PowerPointLibrary.ExcelHelpers
             string? chartStartCell = chartElement.Attribute("startCell")?.Value;
             IChartShape chart = sheet.Charts.Add();
             chart.ChartType = chartType;
+
             if (dataRange != null)
             {
                 chart.DataRange = sheet.Range[dataRange];

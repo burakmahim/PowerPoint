@@ -82,7 +82,7 @@
 				<cell formula="=LEN(B12)"></cell>
 			</row>
 
-			<row>
+			<row>  
 				<cell>Ad + Soyad</cell>
 				<cell>Ad</cell>
 				<cell>Soyad</cell>

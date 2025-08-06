@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using System.Xml.Linq;
 using Microsoft.SqlServer.Server;
 using PowerPointLibrary;
+using PowerPointLibrary.ExcelHelpers;
+using PowerPointLibrary.PowerPointHelpers;
 
 
 namespace PowerPointApp.Mvc.Controllers
@@ -64,7 +66,7 @@ namespace PowerPointApp.Mvc.Controllers
 
             try
             {
-                byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
+                byte[] pdfBytes = PowerPointPdfConverter.ConvertToPdf(xmlContent);
                 return File(pdfBytes, "application/pdf");
             }
             catch (Exception ex)
@@ -87,7 +89,7 @@ namespace PowerPointApp.Mvc.Controllers
 
             try
             {
-                byte[] pdfBytes = ExcelLibrary.ConvertToPdf(xmlContent);
+                byte[] pdfBytes = ExcelPdfConverter.ConvertToPdf(xmlContent);
                 return File(pdfBytes, "application/pdf");
             }
 
