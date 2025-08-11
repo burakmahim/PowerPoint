@@ -10,6 +10,9 @@ using Syncfusion.XlsIO;
 using Syncfusion.Presentation;
 using PowerPointLibrary.ExcelServices;
 
+//using Syncfusion.PresentationToPdfConverter;
+
+
 
 #if NET48
 using Syncfusion.ExcelToPdfConverter;
@@ -45,13 +48,14 @@ namespace PowerPointLibrary
 
                     var tableMap = new Dictionary<string, (int StartRow, int StartCol, int RowCount, int ColCount)>();
 
+                    // Sırayla tüm alt elemanları işle
                     foreach (XElement element in sheetXml.Elements())
                     {
                         switch (element.Name.LocalName)
                         {
                             case "table":
                                 currentRow = ExcelTableBuilder.AddTable(element, sheet, currentRow, currentColumn, tableMap);
-                                currentRow += 1; 
+                                currentRow += 1; // tablo sonrası boşluk
                                 break;
 
                             case "chart":
@@ -59,7 +63,9 @@ namespace PowerPointLibrary
                                 currentRow += 22; // grafik yüksekliği kadar boşluk
                                 break;
 
+                            // Eğer başka özel elemanlar varsa buraya eklenebilir
                             default:
+                                // Bilinmeyen bir eleman varsa geç ve satır atla
                                 currentRow += 1;
                                 break;
                         }

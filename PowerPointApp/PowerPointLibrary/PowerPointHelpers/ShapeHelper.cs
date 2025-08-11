@@ -45,6 +45,7 @@ namespace PowerPointLibrary.PowerPointHelpers
             paragraph.HorizontalAlignment = alignment;
             paragraph.Font.Color = ColorHelper.ParseColor(textColor);
 
+            //shape.LineFormat.Fill.FillType = FillType.None;
 
             if (backgroundColor != null)
             {

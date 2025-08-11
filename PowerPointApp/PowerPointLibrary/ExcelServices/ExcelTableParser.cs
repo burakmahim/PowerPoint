@@ -17,11 +17,12 @@ using Syncfusion.ExcelChartToImageConverter;
 using Syncfusion.XlsIORenderer;
 #endif
 
- 
+
 namespace PowerPointLibrary.ExcelServices
 {
     public static class ExcelTableParser
     {
+        // 📌 ExcelSheet ve tablo haritası ile tüm tabloları alır
         public static Dictionary<string, DataTable> ParseAllTables(IWorksheet sheet, Dictionary<string, (int row, int col, int rowCount, int colCount)> tableMap)
         {
             var result = new Dictionary<string, DataTable>();
@@ -41,6 +42,7 @@ namespace PowerPointLibrary.ExcelServices
             return result;
         }
 
+        // 📊 Belirli IRange aralığını DataTable olarak döner (formül sonuçları dahil)
         public static DataTable ConvertRangeToDataTable(IRange range)
         {
             DataTable dt = new DataTable();
@@ -58,6 +60,7 @@ namespace PowerPointLibrary.ExcelServices
                 DataRow dr = dt.NewRow();
                 for (int col = 0; col < colCount; col++)
                 {
+                    // DisplayText: hem değer hem de formül sonucu için güvenlidir
                     dr[col] = range[row + 1, col + 1].DisplayText;
                 }
                 dt.Rows.Add(dr);

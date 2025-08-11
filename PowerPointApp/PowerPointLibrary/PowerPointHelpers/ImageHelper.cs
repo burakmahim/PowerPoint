@@ -49,7 +49,7 @@ namespace PowerPointLibrary.PowerPointHelpers
             }
             catch
             {
-
+                // Hata durumunda sessizce devam et
             }
         }
     }
