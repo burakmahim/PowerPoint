@@ -105,26 +105,26 @@ namespace PowerPointApp.Mvc.Controllers
         [ValidateInput(false)]
         public ActionResult GenerateExcelPdf(string xmlContent)
         {
+
+            if (string.IsNullOrWhiteSpace(xmlContent))
+            {
+                ViewBag.Error = "XML içeriği boş gönderildi.";
+                return View("Index");
+            }
+
             try
             {
                 byte[] pdfBytes = ExcelConverter.ConvertToPdf(xmlContent);
-
-                // BASE64 stringe dönüştür
-                string base64Pdf = Convert.ToBase64String(pdfBytes);
-
-                // ViewBag ile View'a gönder
-                ViewBag.ExcelPdf = "data:application/pdf;base64," + base64Pdf;
-                ViewBag.XmlContent = xmlContent;
-                return View("Index");
-
+                return File(pdfBytes, "application/pdf");
             }
+
             catch (Exception ex)
             {
-                ViewBag.Error = "PDF oluşturulamadı: " + ex.Message;
+                ViewBag.Error = ex.Message;
                 return View("Index");
             }
-        }
 
+        }
 
 
     }

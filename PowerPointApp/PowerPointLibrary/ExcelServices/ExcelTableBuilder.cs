@@ -46,7 +46,6 @@ namespace PowerPointLibrary.ExcelServices
                 }
             }
 
-            // 📌 Tablo bilgisi map'e ekleniyor
             string? name = table.Attribute("name")?.Value;
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -55,7 +54,6 @@ namespace PowerPointLibrary.ExcelServices
                 tableMap[name] = (startRow, startCol, rowCount, colCount);
             }
 
-            // 📊 Formüller hesaplanır
             sheet.EnableSheetCalculations();
             sheet.Calculate();
 
