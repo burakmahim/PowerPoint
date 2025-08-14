@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace PowerPointLibrary.PowerPointHelpers
+namespace PowerPointLibrary.PowerpointComponents    
 {
-    public static class ChartHelper
+    public static class ChartComponent
     {
         public static void AddChart(ISlide slide, XElement chartElement)
         {
@@ -19,10 +19,7 @@ namespace PowerPointLibrary.PowerPointHelpers
                 throw new Exception("Chart için 'type' niteliği zorunludur ve boş olamaz.");
             }
 
-            double x = (double.TryParse(chartElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
-            double y = (double.TryParse(chartElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
-            double cx = (double.TryParse(chartElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 15) * 28.3465;
-            double cy = (double.TryParse(chartElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 15) * 28.3465;
+            (double x, double y, double cx, double cy) = CoordinatesParser.CoordinateParser(chartElement, 1, 1, 15, 15);
 
             switch (chartTypeStr.ToLower())
             {

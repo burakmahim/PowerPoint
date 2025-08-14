@@ -1,87 +1,23 @@
 ﻿using Syncfusion.XlsIO;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-
-namespace PowerPointLibrary.ExcelHelpers
+namespace PowerPointLibrary.ExcelComponents
 {
-    public class TableBuilder
+    public static class ConditionalFormattingComponent
     {
-        public static IRange AddTable(XElement table, IWorksheet sheet, out int rowCount, out int colCount)
-        {
-            string? startCell = table.Attribute("startCell")?.Value ?? "A1";
-            IRange startRange = sheet.Range[startCell];
-
-            List<XElement> rows = table.Elements("row").ToList();
-            rowCount = rows.Count;
-            colCount = rows.Max(r => r.Elements("cell").Count());
-
-            for (int rowIndex = 0; rowIndex < rowCount; rowIndex++)
-            {
-                List<XElement> cells = rows[rowIndex].Elements("cell").ToList();
-                for (int colIndex = 0; colIndex < cells.Count; colIndex++)
-                {
-                    IRange cell = sheet[startRange.Row + rowIndex, startRange.Column + colIndex];
-                    string? value = cells[colIndex].Value;
-                    string? formula = cells[colIndex].Attribute("formula")?.Value;
-
-                    if (DateTime.TryParse(value, out DateTime dateValue))
-                    {
-                        cell.DateTime = dateValue;
-                        cell.NumberFormat = "dd.mm.yyyy";
-                    }
-                    else if (double.TryParse(value, out double numericValue))
-                    {
-                        cell.Number = numericValue;
-                    }
-                    else
-                    {
-                        cell.Text = value;
-                    }
-
-                    if (!string.IsNullOrEmpty(formula))
-                        cell.Formula = formula;
-
-                    if (cells[colIndex].Attribute("bold")?.Value == "true")
-                        cell.CellStyle.Font.Bold = true;
-                }
-            }
-
-            sheet.Calculate();
-
-            string? tableName = $"Table_{sheet.Name}_{sheet.ListObjects.Count + 1}";
-
-            IRange tableRange = sheet.Range[
-                startRange.Row,
-                startRange.Column,
-                startRange.Row + rowCount - 1,
-                startRange.Column + colCount - 1];
-
-            XElement? conditionalFormats = table.Element("conditionalFormats");
-            if (conditionalFormats != null)
-            {
-                ApplyConditionalFormatting(conditionalFormats, sheet, tableRange);
-            }
-
-            IListObject listObject = sheet.ListObjects.Create(tableName, tableRange);
-            listObject.BuiltInTableStyle = TableBuiltInStyles.TableStyleMedium9;
-
-            return startRange;
-        }
-
         public static void ApplyConditionalFormatting(XElement conditionalFormats, IWorksheet sheet, IRange tableRange)
         {
             foreach (XElement conditionalFormat in conditionalFormats.Elements("conditionalFormat"))
             {
-                string? cellRange       = conditionalFormat.Attribute("cellRange")?.Value ?? "";
-                string? operatorValue   = conditionalFormat.Attribute("operator")?.Value ?? "";
-                string? bgColor         = conditionalFormat.Attribute("bgColor")?.Value ?? "";
-                string? type            = conditionalFormat.Attribute("type")?.Value ?? "";
+                string? cellRange = conditionalFormat.Attribute("cellRange")?.Value ?? "";
+                string? operatorValue = conditionalFormat.Attribute("operator")?.Value ?? "";
+                string? bgColor = conditionalFormat.Attribute("bgColor")?.Value ?? "";
+                string? type = conditionalFormat.Attribute("type")?.Value ?? "";
 
                 IRange targetRange;
                 if (string.IsNullOrEmpty(cellRange))

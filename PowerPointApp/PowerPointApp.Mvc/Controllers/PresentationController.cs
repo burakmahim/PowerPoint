@@ -6,8 +6,8 @@ using System.Web.Mvc;
 using System.Xml.Linq;
 using Microsoft.SqlServer.Server;
 using PowerPointLibrary;
-using PowerPointLibrary.ExcelHelpers;
-using PowerPointLibrary.PowerPointHelpers;
+using PowerPointLibrary.ExcelComponents;
+using PowerPointLibrary.PowerpointComponents;
 
 
 namespace PowerPointApp.Mvc.Controllers

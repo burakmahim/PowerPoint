@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Syncfusion.Presentation;
 
-namespace PowerPointLibrary.PowerPointHelpers
+namespace PowerPointLibrary.PowerpointComponents
 {
     public static class ColorHelper
     {

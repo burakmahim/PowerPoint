@@ -9,7 +9,7 @@ using Syncfusion.Pdf;
 using Syncfusion.XlsIO;
 using Syncfusion.Presentation;
 using Syncfusion.XlsIO.Parser.Biff_Records;
-using PowerPointLibrary.ExcelHelpers;
+using PowerPointLibrary.ExcelComponents;
 
 
 #if NET48
@@ -19,7 +19,7 @@ using Syncfusion.ExcelChartToImageConverter;
 using Syncfusion.XlsIORenderer;
 #endif
 
-namespace PowerPointLibrary.ExcelHelpers
+namespace PowerPointLibrary.ExcelComponents
 {
     public static class ExcelPdfConverter
     {

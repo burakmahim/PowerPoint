@@ -7,18 +7,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace PowerPointLibrary.PowerPointHelpers
+namespace PowerPointLibrary.PowerpointComponents
 {
-    public static class ImageHelper
+    public static class ImageComponent
     {
         public static void AddImage(ISlide slide, XElement imgElement)
         {
             string? imagePath = imgElement.Attribute("path")?.Value;
 
-            double x = (double.TryParse(imgElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
-            double y = (double.TryParse(imgElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
-            double cx = (double.TryParse(imgElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
-            double cy = (double.TryParse(imgElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
+            (double x, double y, double cx, double cy) = CoordinatesParser.CoordinateParser(imgElement, 1, 1, 5, 5);
 
             if (string.IsNullOrWhiteSpace(imagePath)) return;
 

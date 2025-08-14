@@ -6,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PowerPointLibrary.ExcelHelpers
+namespace PowerPointLibrary.ExcelComponents
 {
-    public static class ChartBuilder
+    public static class ChartComponent
     {
         public static void AddChart(XElement chartElement, IWorksheet sheet, IRange startRange, int rowCount, int colCount, int topRow, int chartWidth, int chartHeight)
         {

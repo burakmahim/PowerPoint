@@ -8,7 +8,7 @@ using Syncfusion.Pdf;
 using System.Drawing;
 using System.Security.Policy;
 using System.Collections.Generic;
-using PowerPointLibrary.PowerPointHelpers;
+using PowerPointLibrary.PowerpointComponents;
 
 #if NET48
 using Syncfusion.Presentation;
@@ -24,7 +24,7 @@ using Syncfusion.PresentationRenderer;
 using Syncfusion.OfficeChart;
 #endif
 
-namespace PowerPointLibrary.PowerPointHelpers
+namespace PowerPointLibrary.PowerpointComponents
 {
     public static class PowerPointPdfConverter
     {

@@ -8,7 +8,7 @@ using Syncfusion.Pdf;
 using System.Drawing;
 using System.Security.Policy;
 using System.Collections.Generic;
-using PowerPointLibrary.PowerPointHelpers;
+using PowerPointLibrary.PowerpointComponents;
 
 #if NET48
 using Syncfusion.Presentation;
@@ -57,12 +57,12 @@ namespace PowerPointLibrary
 
                     ISlide slide = presentation.Slides.Add(slideLayoutType);
 
-                    LayoutHelper.SetLayoutContent(slide, slideElement, slideLayoutType);
+                    LayoutComponent.SetLayoutContent(slide, slideElement, slideLayoutType);
 
 
                     if (footerElement != null)
                     {
-                        HeaderFooterHelper.SetHeaderFooter(document, slide);
+                        HeaderFooterComponent.SetHeaderFooter(document, slide);
                     }
 
                     string? slideBackgroundColor = slideElement.Attribute("backgroundColor")?.Value;
@@ -77,7 +77,7 @@ namespace PowerPointLibrary
                     {
                         foreach(XElement chartElement in chartElements)
                         {
-                            ChartHelper.AddChart(slide, chartElement);
+                            ChartComponent.AddChart(slide, chartElement);
                         }
                     }
 
@@ -86,7 +86,7 @@ namespace PowerPointLibrary
                     {
                         foreach (XElement imgElement in imageElements)
                         {
-                            ImageHelper.AddImage(slide, imgElement);
+                            ImageComponent.AddImage(slide, imgElement);
                         }
                     }
 
@@ -95,7 +95,7 @@ namespace PowerPointLibrary
                     {
                         foreach (XElement tableElement in tableElements)
                         {
-                            TableHelper.AddTable(slide, tableElement);
+                            TableComponent.AddTable(slide, tableElement);
                         }
                     }
 
@@ -106,7 +106,7 @@ namespace PowerPointLibrary
                         {
                             
 
-                            ShapeHelper.AddShape(shapeElement, slide);
+                            ShapeComponent.AddShape(shapeElement, slide);
                         }
                     }
 
@@ -115,7 +115,7 @@ namespace PowerPointLibrary
                     {
                         foreach (XElement listElement in listElements)
                         {
-                            ListHelper.AddList(listElement, slide);
+                            ListComponent.AddList(listElement, slide);
                         }
                     }
 
@@ -124,7 +124,7 @@ namespace PowerPointLibrary
                     {
                         foreach (XElement textboxElement in textboxElements)
                         {
-                            TextBoxHelper.AddTextBox(textboxElement,slide);
+                            TextBoxComponent.AddTextBox(textboxElement,slide);
                         }
                     }
                 }

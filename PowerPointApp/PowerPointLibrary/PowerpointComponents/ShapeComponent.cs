@@ -7,18 +7,15 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 
 
-namespace PowerPointLibrary.PowerPointHelpers
+namespace PowerPointLibrary.PowerpointComponents
 {
-    public static class ShapeHelper
+    public static class ShapeComponent
     {
         public static void AddShape(XElement shapeElement, ISlide slide)
         {
             string? fontFamily = shapeElement.Attribute("fontFamily")?.Value;
 
-            double x = (double.TryParse(shapeElement.Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dx) ? dx : 1) * 28.3465;
-            double y = (double.TryParse(shapeElement.Attribute("y")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dy) ? dy : 1) * 28.3465;
-            double cx = (double.TryParse(shapeElement.Attribute("w")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dw) ? dw : 5) * 28.3465;
-            double cy = (double.TryParse(shapeElement.Attribute("h")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double dh) ? dh : 5) * 28.3465;
+            (double x, double y, double cx, double cy) = CoordinatesParser.CoordinateParser(shapeElement, 1, 1, 5, 5);
 
             string? text = shapeElement.Value;
 

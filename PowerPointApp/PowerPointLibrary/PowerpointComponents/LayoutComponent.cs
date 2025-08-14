@@ -1,9 +1,9 @@
 ﻿using Syncfusion.Presentation;
 using System.Xml.Linq;
 
-namespace PowerPointLibrary.PowerPointHelpers
+namespace PowerPointLibrary.PowerpointComponents
 {
-    public static class LayoutHelper
+    public static class LayoutComponent
     {
         public static void SetLayoutContent(ISlide slide, XElement slideElement, SlideLayoutType layoutType)
         {
