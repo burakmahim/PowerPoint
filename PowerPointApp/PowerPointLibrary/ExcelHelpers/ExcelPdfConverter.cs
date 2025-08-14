@@ -51,7 +51,7 @@ namespace PowerPointLibrary.ExcelHelpers
             return outMs.ToArray();
 
 #elif NET9_0
-    using ExcelEngine excelEngine = new ExcelEngine();
+            using ExcelEngine excelEngine = new ExcelEngine();
     IApplication application = excelEngine.Excel;
     application.DefaultVersion = ExcelVersion.Xlsx;
 

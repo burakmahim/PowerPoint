@@ -52,8 +52,6 @@ namespace PowerPointLibrary.PowerPointHelpers
                 shape.Fill.FillType = FillType.Solid;
                 shape.Fill.SolidFill.Color = ColorHelper.ParseColor(backgroundColor);
             }
-
-
         }
     }
 }

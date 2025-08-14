@@ -112,7 +112,7 @@ namespace PowerPointLibrary.PowerPointHelpers
                 IOfficeChartSerie serie = chart.Series.Add();
                 serie.Name = seriesElement.Attribute("name")?.Value ?? $"Seri {seriesIndex + 1}";
 
-                var dataPoints = seriesElement.Elements("point").ToList();
+                List<XElement> dataPoints = seriesElement.Elements("point").ToList();
                 for (int i = 0; i < Math.Min(categories.Count, dataPoints.Count); i++)
                 {
                     double value = double.TryParse(dataPoints[i].Attribute("value")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double val) ? val : 0;
@@ -196,7 +196,7 @@ namespace PowerPointLibrary.PowerPointHelpers
                 IOfficeChartSerie serie = chart.Series.Add();
                 serie.Name = seriesElement.Attribute("name")?.Value ?? $"Seri {seriesIndex + 1}";
 
-                var dataPoints = seriesElement.Elements("point").ToList();
+                List<XElement> dataPoints = seriesElement.Elements("point").ToList();
                 for (int i = 0; i < Math.Min(categories.Count, dataPoints.Count); i++)
                 {
                     double value = double.TryParse(dataPoints[i].Attribute("value")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double val) ? val : 0;
@@ -222,7 +222,7 @@ namespace PowerPointLibrary.PowerPointHelpers
 
             chart.Series.Clear();
 
-            var categories = chartElement.Elements("category").ToList();
+            List<XElement> categories = chartElement.Elements("category").ToList();
             if (categories.Count == 0) return;
 
             for (int i = 0; i < categories.Count; i++)
@@ -256,7 +256,7 @@ namespace PowerPointLibrary.PowerPointHelpers
 
             chart.Series.Clear();
 
-            var series = chartElement.Elements("series").ToList();
+            List<XElement> series = chartElement.Elements("series").ToList();
             if (series.Count == 0) return;
 
             for (int seriesIndex = 0; seriesIndex < series.Count; seriesIndex++)
@@ -265,7 +265,7 @@ namespace PowerPointLibrary.PowerPointHelpers
                 IOfficeChartSerie serie = chart.Series.Add();
                 serie.Name = seriesElement.Attribute("name")?.Value ?? $"Seri {seriesIndex + 1}";
 
-                var dataPoints = seriesElement.Elements("point").ToList();
+                List<XElement> dataPoints = seriesElement.Elements("point").ToList();
                 for (int i = 0; i < dataPoints.Count; i++)
                 {
                     double xValue = double.TryParse(dataPoints[i].Attribute("x")?.Value, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double xVal) ? xVal : 0;

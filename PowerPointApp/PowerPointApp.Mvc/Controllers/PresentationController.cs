@@ -79,7 +79,7 @@ namespace PowerPointApp.Mvc.Controllers
         [HttpPost]
         [ValidateInput(false)]
         public ActionResult GenerateExcelPdf(string xmlContent)
-        {
+      {
 
             if (string.IsNullOrWhiteSpace(xmlContent))
             {

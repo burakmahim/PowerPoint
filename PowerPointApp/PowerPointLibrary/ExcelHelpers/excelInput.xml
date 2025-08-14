@@ -1,5 +1,7 @@
 ﻿<excel>
+	
 	<sheet name="Formüller">
+		
 		<table>
 			<row>
 				<cell bold="true">Açıklama</cell>
@@ -111,110 +113,6 @@
 			</row>
 		</table>
 	</sheet>
-
-	<sheet>
-		<table>
-			<row>
-				<cell bold="true">Ay</cell>
-				<cell>Ürün A Satışı</cell>
-				<cell>Ürün B Satışı</cell>
-				<cell>Ürün C Satışı</cell>
-				<cell>Toplam Satış</cell>
-			</row>
-			<row>
-				<cell bold="true">Ocak</cell>
-				<cell>120</cell>
-				<cell>85</cell>
-				<cell>60</cell>
-				<cell formula="=B2+C2+D2"></cell>
-			</row>
-			<row>
-				<cell bold="true">Şubat</cell>
-				<cell>140</cell>
-				<cell>95</cell>
-				<cell>70</cell>
-				<cell formula="=B3+C3+D3"></cell>
-			</row>
-			<row>
-				<cell bold="true">Mart</cell>
-				<cell>170</cell>
-				<cell>110</cell>
-				<cell>90</cell>
-				<cell formula="=B4+C4+D4"></cell>
-			</row>
-			<row>
-				<cell bold="true">Nisan</cell>
-				<cell>160</cell>
-				<cell>105</cell>
-				<cell>85</cell>
-				<cell formula="=B5+C5+D5"></cell>
-			</row>
-			<row>
-				<cell bold="true">Mayıs</cell>
-				<cell>180</cell>
-				<cell>120</cell>
-				<cell>100</cell>
-				<cell formula="=B6+C6+D6"></cell>
-			</row>
-			<row>
-				<cell bold="true">Haziran</cell>
-				<cell>175</cell>
-				<cell>115</cell>
-				<cell>95</cell>
-				<cell formula="=B7+C7+D7"></cell>
-			</row>
-			<row>
-				<cell bold="true">Temmuz</cell>
-				<cell>190</cell>
-				<cell>125</cell>
-				<cell>105</cell>
-				<cell formula="=B8+C8+D8"></cell>
-			</row>
-			<row>
-				<cell bold="true">Ağustos</cell>
-				<cell>200</cell>
-				<cell>130</cell>
-				<cell>110</cell>
-				<cell formula="=B9+C9+D9"></cell>
-			</row>
-			<row>
-				<cell bold="true">Eylül</cell>
-				<cell>185</cell>
-				<cell>120</cell>
-				<cell>100</cell>
-				<cell formula="=B10+C10+D10"></cell>
-			</row>
-			<row>
-				<cell bold="true">Ekim</cell>
-				<cell>195</cell>
-				<cell>135</cell>
-				<cell>115</cell>
-				<cell formula="=B11+C11+D11"></cell>
-			</row>
-			<row>
-				<cell bold="true">Kasım</cell>
-				<cell>210</cell>
-				<cell>140</cell>
-				<cell>120</cell>
-				<cell formula="=B12+C12+D12"></cell>
-			</row>
-			<row>
-				<cell bold="true">Aralık</cell>
-				<cell>220</cell>
-				<cell>145</cell>
-				<cell>125</cell>
-				<cell formula="=B13+C13+D13"></cell>
-			</row>
-			<row>
-				<cell bold="true">Ürün Toplam</cell>
-				<cell  formula="=SUM(B2:B13)"></cell>
-				<cell  formula="=SUM(C2:C13)"></cell>
-				<cell  formula="=SUM(D2:D13)"></cell>
-				<cell  formula="=SUM(E2:E13)"></cell>
-			</row>
-		</table>
-	</sheet>
-
 	<sheet>
 		<table>
 			<row>
@@ -332,6 +230,235 @@
 				<cell formula="=(B4*0,4)+(C4*0,6)" />
 				<cell formula="=IF(D4&gt;=50,&quot;Geçti&quot;,&quot;Kaldı&quot;)" />
 			</row>
+			<conditionalFormats>
+				<conditionalFormat firstFormula="50" operator="Less" bgColor="#9C0006" cellRange="D2:D4" />
+			</conditionalFormats>
 		</table>
 	</sheet>
+	<sheet name="YıllıkSatış">
+		<table startCell="A1">
+			<row>
+				<cell bold="true">Ay</cell>
+				<cell bold="true">Ürün A</cell>
+				<cell bold="true">Ürün B</cell>
+				<cell bold="true">Ürün C</cell>
+				<cell bold="true">Ürün D</cell>
+				<cell bold="true">Ürün E</cell>
+				<cell bold="true">Toplam Satış</cell>
+			</row>
+
+			<row>
+				<cell>Ocak</cell>
+				<cell>120</cell>
+				<cell>85</cell>
+				<cell></cell>
+				<cell>50</cell>
+				<cell>75</cell>
+				<cell formula="=B2+C2+D2+E2+F2"/>
+			</row>
+
+			<row>
+				<cell>Şubat</cell>
+				<cell>140</cell>
+				<cell></cell>
+				<cell>95</cell>
+				<cell>60</cell>
+				<cell>80</cell>
+				<cell formula="=B3+C3+D3+E3+F3"/>
+			</row>
+
+			<row>
+				<cell>Mart</cell>
+				<cell></cell>
+				<cell>100</cell>
+				<cell>90</cell>
+				<cell>70</cell>
+				<cell></cell>
+				<cell formula="=B4+C4+D4+E4+F4"/>
+			</row>
+
+			<row>
+				<cell>Nisan</cell>
+				<cell>160</cell>
+				<cell>105</cell>
+				<cell></cell>
+				<cell>85</cell>
+				<cell>95</cell>
+				<cell formula="=B5+C5+D5+E5+F5"/>
+			</row>
+
+			<row>
+				<cell>Mayıs</cell>
+				<cell>180</cell>
+				<cell></cell>
+				<cell>120</cell>
+				<cell>100</cell>
+				<cell>110</cell>
+				<cell formula="=B6+C6+D6+E6+F6"/>
+			</row>
+
+			<row>
+				<cell>Haziran</cell>
+				<cell>175</cell>
+				<cell>115</cell>
+				<cell>95</cell>
+				<cell></cell>
+				<cell>100</cell>
+				<cell formula="=B7+C7+D7+E7+F7"/>
+			</row>
+
+			<row>
+				<cell>Temmuz</cell>
+				<cell>190</cell>
+				<cell>125</cell>
+				<cell></cell>
+				<cell>105</cell>
+				<cell>120</cell>
+				<cell formula="=B8+C8+D8+E8+F8"/>
+			</row>
+
+			<row>
+				<cell>Ağustos</cell>
+				<cell>200</cell>
+				<cell></cell>
+				<cell>130</cell>
+				<cell>110</cell>
+				<cell>135</cell>
+				<cell formula="=B9+C9+D9+E9+F9"/>
+			</row>
+
+			<row>
+				<cell>Eylül</cell>
+				<cell>185</cell>
+				<cell>120</cell>
+				<cell></cell>
+				<cell>100</cell>
+				<cell></cell>
+				<cell formula="=B10+C10+D10+E10+F10"/>
+			</row>
+
+			<row>
+				<cell>Ekim</cell>
+				<cell>195</cell>
+				<cell>135</cell>
+				<cell>115</cell>
+				<cell></cell>
+				<cell>140</cell>
+				<cell formula="=B11+C11+D11+E11+F11"/>
+			</row>
+
+			<row>
+				<cell>Kasım</cell>
+				<cell>210</cell>
+				<cell></cell>
+				<cell>140</cell>
+				<cell>120</cell>
+				<cell>150</cell>
+				<cell formula="=B12+C12+D12+E12+F12"/>
+			</row>
+
+			<row>
+				<cell>Aralık</cell>
+				<cell>220</cell>
+				<cell>145</cell>
+				<cell>125</cell>
+				<cell>130</cell>
+				<cell></cell>
+				<cell formula="=B13+C13+D13+E13+F13"/>
+			</row>
+			<conditionalFormats>
+				<conditionalFormat type="cellvalue" operator="equal" firstFormula="120" bgColor="green"/>
+				<conditionalFormat type="cellvalue" operator="between" firstFormula="70" secondFormula="90" bgColor="blue"/>
+				<conditionalFormat type="blank" bgColor="pink"/>
+				<conditionalFormat type="duplicate" bgColor="lightgreen"/>
+			</conditionalFormats>
+
+
+
+		</table>
+
+		<table>
+			<row>
+				<cell bold="true">Ürün</cell>
+				<cell bold="true">Ocak</cell>
+				<cell bold="true">Şubat</cell>
+				<cell bold="true">Toplam</cell>
+			</row>
+
+			<row>
+				<cell>Ürün A</cell>
+				<cell>800</cell>
+				<cell>1200</cell>
+				<cell>=B2+C2</cell>
+			</row>
+
+			<row>
+				<cell>Ürün B</cell>
+				<cell>500</cell>
+				<cell>600</cell>
+				<cell>=B3+C3</cell>
+			</row>
+			
+			<conditionalFormats>
+				<conditionalFormat type="cellvalue" operator="less" firstFormula="800" bgColor="green"/>
+			</conditionalFormats>
+
+		</table>
+		<table>
+			<row>
+				<cell bold="true">Görev</cell>
+				<cell bold="true">Durum</cell>
+				<cell bold="true">Sorumlu</cell>
+			</row>
+
+			<row>
+				<cell>Rapor Hazırlama</cell>
+				<cell>Tamamlandı</cell>
+				<cell>Ali</cell>
+			</row>
+
+			<row>
+				<cell>Sunum</cell>
+				<cell>Devam Ediyor</cell>
+				<cell>Ayşe</cell>
+			</row>
+
+			<row>
+				<cell>Eğitim Planlama</cell>
+				<cell>Beklemede</cell>
+				<cell>Mehmet</cell>
+			</row>
+
+			<conditionalFormats>
+				<conditionalFormat type="specifictext" operator="contains" firstFormula="Tamamlandı" bgColor="lightgreen" cellRange="B2:B4"/>
+				<conditionalFormat type="specifictext" operator="startswith" firstFormula="Ayş" bgColor="lightblue"/>
+				<conditionalFormat type="specifictext" operator="endswith" firstFormula="lu" bgColor="pink"/>
+			</conditionalFormats>
+			
+		</table>
+	</sheet>
+	<sheet>
+		<table>
+			<row>
+				<cell bold="true">Etkinlik</cell>
+				<cell bold="true">Tarih</cell>
+			</row>
+			<row>
+				<cell>Bugün</cell>
+				<cell>2025-08-13</cell>
+			</row>
+			<row>
+				<cell>Dün</cell>
+				<cell>2025-08-12</cell>
+			</row>
+			<row>
+				<cell>Yarın</cell>
+				<cell>2025-08-14</cell>
+			</row>
+			<conditionalFormats>
+				<conditionalFormat type="formula" firstFormula="A1:B4=TODAY()" bgColor="red"/>
+			</conditionalFormats>
+		</table>
+	</sheet>
+	
 </excel>

@@ -26,7 +26,7 @@ namespace PowerPointLibrary.PowerPointHelpers
             string listFontSize = listElement.Attribute("size")?.Value ?? "14";
             string listType = listElement.Attribute("type")?.Value ?? "bulleted";
 
-            ListType listTypeParsed = Enum.TryParse<ListType>(listType, true, out var result) ? result : ListType.Bulleted;
+            ListType listTypeParsed = Enum.TryParse<ListType>(listType, true, out ListType result) ? result : ListType.Bulleted;
 
             int listFontSizeParsed = int.TryParse(listFontSize, out int s) ? s : 14;
 

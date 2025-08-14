@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PowerPointLibrary;
+using PowerPointLibrary.PowerPointHelpers;
+using PowerPointLibrary.ExcelHelpers;
 using System;
 
 namespace PowerPointApp.Controllers
@@ -9,7 +11,7 @@ namespace PowerPointApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            ViewBag.XmlContent = ""; // İlk yüklemede boş olabilir veya varsayılan XML atanabilir.
+            ViewBag.XmlContent = "";
             return View();
         }
 
@@ -41,7 +43,7 @@ namespace PowerPointApp.Controllers
 
             try
             {
-                byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
+                byte[] pdfBytes = PowerPointPdfConverter.ConvertToPdf(xmlContent);
                 return File(pdfBytes, "application/pdf");
             }
             catch (Exception ex)
@@ -83,7 +85,7 @@ namespace PowerPointApp.Controllers
 
             try
             {
-                byte[] pdfBytes = ExcelLibrary.ConvertToPdf(xmlContent);
+                byte[] pdfBytes = ExcelPdfConverter.ConvertToPdf(xmlContent);
                 return File(pdfBytes, "application/pdf");
             }
             catch (Exception ex)
