@@ -25,8 +25,6 @@ namespace PowerPointLibrary.PowerpointComponents
 
             slide.HeadersFooters.SlideNumber.Visible = enableSlideNumber;
 
-           // (double x, double y, double cx, double cy) = CoordinatesParser.CoordinateParser(footerElement, 1, 12.5, 23, 1.2);
-
         }
     }
 }

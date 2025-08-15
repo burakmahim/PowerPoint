@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PowerPointLibrary;
-using PowerPointLibrary.PowerPointHelpers;
-using PowerPointLibrary.ExcelHelpers;
+using PowerPointLibrary.PowerpointComponents;
+using PowerPointLibrary.ExcelComponents;
 using System;
 
 namespace PowerPointApp.Controllers

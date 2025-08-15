@@ -20,6 +20,7 @@ namespace PowerPointLibrary.ExcelComponents
                 string? type = conditionalFormat.Attribute("type")?.Value ?? "";
 
                 IRange targetRange;
+
                 if (string.IsNullOrEmpty(cellRange))
                 {
                     targetRange = tableRange;
@@ -159,7 +160,6 @@ namespace PowerPointLibrary.ExcelComponents
 
             }
         }
-
         public static ExcelKnownColors? GetExcelColor(string? colorName)
         {
             if (string.IsNullOrEmpty(colorName))

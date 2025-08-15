@@ -111,6 +111,7 @@
 				<cell></cell>
 				<cell formula="=IFERROR(10/B17; &quot;Hata&quot;)"></cell>
 			</row>
+
 		</table>
 	</sheet>
 	<sheet>
@@ -231,7 +232,7 @@
 				<cell formula="=IF(D4&gt;=50,&quot;Geçti&quot;,&quot;Kaldı&quot;)" />
 			</row>
 			<conditionalFormats>
-				<conditionalFormat firstFormula="50" operator="Less" bgColor="#9C0006" cellRange="D2:D4" />
+				<conditionalFormat type="specifictext" operator="contains" firstFormula="Geçti" bgColor="lightgreen"/>
 			</conditionalFormats>
 		</table>
 	</sheet>
@@ -434,31 +435,6 @@
 				<conditionalFormat type="specifictext" operator="startswith" firstFormula="Ayş" bgColor="lightblue"/>
 				<conditionalFormat type="specifictext" operator="endswith" firstFormula="lu" bgColor="pink"/>
 			</conditionalFormats>
-			
 		</table>
 	</sheet>
-	<sheet>
-		<table>
-			<row>
-				<cell bold="true">Etkinlik</cell>
-				<cell bold="true">Tarih</cell>
-			</row>
-			<row>
-				<cell>Bugün</cell>
-				<cell>2025-08-13</cell>
-			</row>
-			<row>
-				<cell>Dün</cell>
-				<cell>2025-08-12</cell>
-			</row>
-			<row>
-				<cell>Yarın</cell>
-				<cell>2025-08-14</cell>
-			</row>
-			<conditionalFormats>
-				<conditionalFormat type="formula" firstFormula="A1:B4=TODAY()" bgColor="red"/>
-			</conditionalFormats>
-		</table>
-	</sheet>
-	
 </excel>

@@ -12,7 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
 
 <div class="container-fluid mt-5">
-    <h1 class="mb-4">📄 XML İçeriğini Düzenle (.NET 9)</h1>
+    <h1 class="mb-4">.NET CORE 9</h1>
 
     @if (ViewBag.Error != null)
     {
@@ -25,22 +25,27 @@
 
         <div class="mt-4">
             <button type="submit" class="btn btn-primary me-2" formaction="/Presentation/DownloadPptx">
-                PowerPoint Olarak İndir
+                PowerPoint Oluştur ve İndir
             </button>
 
-            <button type="submit" class="btn btn-success me-2" formaction="/Presentation/ViewPdf" formtarget="_blank">
-                PDF Olarak Görüntüle
+            <button type="submit" class="btn btn-primary me-2" formaction="/Presentation/ViewPdf" formtarget="pdfFrame" onclick="document.getElementById('pdfContainer').classList.remove('d-none')">
+                PowerPoint PDF Görüntüle
             </button>
 
             <button type="submit" class="btn btn-success me-2" formaction="/Presentation/GenerateExcelFromXml">
                 Excel Oluştur ve İndir
             </button>
 
-            <button type="submit" class="btn btn-secondary" formaction="/Presentation/GenerateExcelPdf" formtarget="_blank">
-                Pdf Görüntüle (Excel)
+            <button type="submit" class="btn btn-success me-2" formaction="/Presentation/GenerateExcelPdf" formtarget="pdfFrame" onclick="document.getElementById('pdfContainer').classList.remove('d-none')">
+                Excel PDF Görüntüle
             </button>
         </div>
     </form>
+
+    <div class="d-none mt-4" id="pdfContainer">
+        <h4>📄 PDF Önizleme:</h4>
+        <iframe name="pdfFrame" width="100%" height="600px" style="border: 1px solid #ccc;"></iframe>
+    </div>
 </div>
 
 <script>

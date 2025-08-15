@@ -36,13 +36,14 @@ namespace PowerPointLibrary
                 XElement document = XElement.Parse(xmlContent);
                 using IPresentation presentation = Presentation.Create();
 
+                IMasterSlide slideMaster = presentation.Masters[0];
+                
                 XElement? settings = document.Element("settings");
                 if (settings != null)
                 {
                     string? masterBgColor = settings.Attribute("masterBackgroundColor")?.Value;
                     if (masterBgColor != null)
                     {
-                        IMasterSlide slideMaster = presentation.Masters[0];
                         slideMaster.Background.Fill.FillType = FillType.Solid;
                         slideMaster.Background.Fill.SolidFill.Color = ColorHelper.ParseColor(masterBgColor);
                     }
@@ -58,7 +59,6 @@ namespace PowerPointLibrary
                     ISlide slide = presentation.Slides.Add(slideLayoutType);
 
                     LayoutComponent.SetLayoutContent(slide, slideElement, slideLayoutType);
-
 
                     if (footerElement != null)
                     {

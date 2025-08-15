@@ -18,6 +18,7 @@
 		<title>Başlık</title>
 		<leftcontent>Left Content</leftcontent>
 		<rightcontent>Right Content </rightcontent>
+		<shape shapeType="SmileyFace" x="6" y="6"></shape>
 	</slide>
 
 	<slide>

@@ -12,7 +12,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
 
 <div class="container-fluid mt-5">
-    <h1 class="mb-4">📄 XML İçeriğini Düzenle</h1>
+    <h1 class="mb-4">.NET Framework 48</h1>
 
     @if (ViewBag.Error != null)
     {
@@ -26,15 +26,15 @@
 
         <div class="mt-4">
             <button type="submit" class="btn btn-primary me-2" formaction="/Presentation/DownloadPptx">
-                PowerPoint Olarak İndir
+                PowerPoint Oluştur ve İndir
             </button>
 
             <button type="submit"
-                    class="btn btn-success me-2"
+                    class="btn btn-primary me-2"
                     formaction="/Presentation/ViewPdf"
                     formtarget="pdfFrame"
                     onclick="document.getElementById('pdfContainer').classList.remove('d-none')">
-                PDF Görüntüle(PowerPoint)
+                PowerPoint PDF Görüntüle
             </button>
 
             <button type="submit" class="btn btn-success" formaction="/Presentation/GenerateExcelFromXml">
@@ -46,7 +46,7 @@
                     formaction="/Presentation/GenerateExcelPdf"
                     formtarget="pdfFrame"
                     onclick="document.getElementById('pdfContainer').classList.remove('d-none')">
-                Pdf Görüntüle(Excel)
+                Excel PDF Görüntüle
             </button>
 
         </div>

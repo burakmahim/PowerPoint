@@ -37,10 +37,12 @@ namespace PowerPointLibrary.ExcelComponents
                 startRange.Row + rowCount - 1,
                 startRange.Column + colCount - 1];
             }
+
             chart.ChartTitle = chartTitle;
             chart.IsSeriesInRows = false;
             chart.PrimaryCategoryAxis.Title = xAxis;
             chart.PrimaryValueAxis.Title = yAxis;
+
             if (!string.IsNullOrEmpty(chartStartCell))
             {
                 IRange chartStartRange = sheet.Range[chartStartCell];
@@ -52,12 +54,9 @@ namespace PowerPointLibrary.ExcelComponents
                 chart.TopRow = topRow;
                 chart.LeftColumn = startRange.Column;
             }
+
             chart.BottomRow = chart.TopRow + chartHeight;
             chart.RightColumn = chart.LeftColumn + chartWidth;
-            //chart.TopRow = topRow;
-            //chart.BottomRow = topRow + chartHeight;
-            //chart.LeftColumn = startRange.Column;
-            //chart.RightColumn = startRange.Column + chartWidth;
         }
     }
 }
