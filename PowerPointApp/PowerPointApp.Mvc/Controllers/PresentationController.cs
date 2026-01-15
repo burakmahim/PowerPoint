@@ -1,42 +1,83 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using PowerPointLibrary;
+using PowerPointLibrary.ExcelServices;
+using Syncfusion.Pdf.Interactive;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using PowerPointLibrary;
+using System.Xml.Linq;
 
 namespace PowerPointApp.Mvc.Controllers
 {
     public class PresentationController : Controller
     {
-        // GET: /Presentation/
         public ActionResult Index()
         {
             return View();
         }
 
-
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult DownloadPptx(string xmlContent)
         {
-
-            if (string.IsNullOrWhiteSpace(xmlContent))
-            {
-                ViewBag.Error = "XML içeriği boş gönderildi.";
-                return View("Index");
-            }
-
-
             try
             {
-                var pptxBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-                return File(pptxBytes, "application/vnd.openxmlformats-officedocument.presentationml.presentation", "sunum.pptx");
+                byte[] pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
+                return File(pptBytes,
+                    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                    "Sunum.pptx");
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
-                return View("Index");
+                return Content("Hata oluştu: " + ex.Message);
             }
         }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult GenerateExcelFromXml(string xmlContent)
+        {
+            if (string.IsNullOrWhiteSpace(xmlContent))
+                return new HttpStatusCodeResult(400, "XML boş olamaz.");
+
+            try
+            {
+                byte[] result = ExcelLibrary.CreateExcelFromCustomXml(xmlContent);
+                return File(result, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "veriler.xlsx");
+            }
+            catch (Exception ex)
+            {
+                return new HttpStatusCodeResult(500, $"Excel oluşturulamadı: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult ShowHtmlTable(string xmlContent)
+        {
+            try
+            {
+                // Tablolar
+                var tables = ExcelParserService.GetTablesFromXml(xmlContent);
+                ViewBag.AllTables = tables;
+
+                // Grafik-only PDF (tablolar hariç sadece grafik)
+                byte[] chartPdf = ExcelTableParser.ConvertChartOnlyToPdf(xmlContent);
+                string base64 = Convert.ToBase64String(chartPdf);
+                ViewBag.ChartOnlyPdf = "data:application/pdf;base64," + base64;
+
+                return View("ShowHtmlTable");
+            }
+            catch (Exception ex)
+            {
+                return Content("Hata oluştu: " + ex.Message);
+            }
+        }
+
 
         [HttpPost]
         [ValidateInput(false)]
@@ -48,10 +89,9 @@ namespace PowerPointApp.Mvc.Controllers
                 return View("Index");
             }
 
-
             try
             {
-                var pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
+                byte[] pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
                 return File(pdfBytes, "application/pdf");
             }
             catch (Exception ex)
@@ -61,69 +101,31 @@ namespace PowerPointApp.Mvc.Controllers
             }
         }
 
-
-
         [HttpPost]
-        public ActionResult GeneratePptx(string xmlContent)
+        [ValidateInput(false)]
+        public ActionResult GenerateExcelPdf(string xmlContent)
         {
-            if (string.IsNullOrWhiteSpace(xmlContent))
-                return new HttpStatusCodeResult(400, "XML içeriği boş olamaz.");
-
             try
             {
-                var pptBytes = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-                return File(pptBytes,
-                            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                            "presentation.pptx");
+                byte[] pdfBytes = ExcelConverter.ConvertToPdf(xmlContent);
+
+                // BASE64 stringe dönüştür
+                string base64Pdf = Convert.ToBase64String(pdfBytes);
+
+                // ViewBag ile View'a gönder
+                ViewBag.ExcelPdf = "data:application/pdf;base64," + base64Pdf;
+                ViewBag.XmlContent = xmlContent;
+                return View("Index");
+
             }
             catch (Exception ex)
             {
-                return new HttpStatusCodeResult(500, $"Sunum oluşturulamadı: {ex.Message}");
+                ViewBag.Error = "PDF oluşturulamadı: " + ex.Message;
+                return View("Index");
             }
         }
 
-        [HttpPost]
-        public ActionResult GeneratePdf(string xmlContent)
-        {
-            if (string.IsNullOrWhiteSpace(xmlContent))
-                return new HttpStatusCodeResult(400, "XML içeriği boş olamaz.");
 
-            try
-            {
-                var pdfBytes = PowerPointGenerator.ConvertToPdf(xmlContent);
-                return File(pdfBytes, "application/pdf", "presentation.pdf");
-            }
-            catch (Exception ex)
-            {
-                return new HttpStatusCodeResult(500, $"PDF dönüştürme başarısız: {ex.Message}");
-            }
-        }
-
-        [HttpPost]
-        [ValidateInput(false)] // 🛡 Bu satır HTML/XML içeriği kabul eder
-        public ActionResult Generate(string xmlContent, string format)
-        {
-            if (string.IsNullOrWhiteSpace(xmlContent))
-                return Content("XML içeriği boş olamaz.");
-
-            byte[] result;
-            string mime, filename;
-
-            if (format == "pdf")
-            {
-                result = PowerPointGenerator.ConvertToPdf(xmlContent);
-                mime = "application/pdf";
-                filename = "sunum.pdf";
-            }
-            else
-            {
-                result = PowerPointGenerator.CreatePresentationFromXml(xmlContent);
-                mime = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                filename = "sunum.pptx";
-            }
-
-            return File(result, mime, filename);
-        }
 
     }
 }

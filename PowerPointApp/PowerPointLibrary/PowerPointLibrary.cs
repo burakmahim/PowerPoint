@@ -1,23 +1,27 @@
-﻿
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml.Linq;
 using System.Text;
+using Syncfusion.Pdf;
+using System.Drawing;
+using System.Security.Policy;
+using System.Collections.Generic;
+using PowerPointLibrary.PowerPointHelpers;
 
 #if NET48
 using Syncfusion.Presentation;
+using Syncfusion.OfficeChartToImageConverter;
 using Syncfusion.Drawing;
 using Syncfusion.PresentationToPdfConverter;
 using Syncfusion.OfficeChart;
+using Syncfusion.ExcelChartToImageConverter;
 
 #elif NET9_0
 using Syncfusion.Presentation;
 using Syncfusion.PresentationRenderer;
-using Syncfusion.PresentationToPdfConverter;
 using Syncfusion.OfficeChart;
-using Syncfusion.Pdf;
 #endif
 
 
@@ -29,105 +33,104 @@ namespace PowerPointLibrary
         {
             try
             {
-                var doc = XDocument.Parse(xmlContent);
-                using var ppt = Presentation.Create();
+                XElement document = XElement.Parse(xmlContent);
+                using IPresentation presentation = Presentation.Create();
 
-                var settings = doc.Root?.Element("settings");
+                XElement? settings = document.Element("settings");
                 if (settings != null)
                 {
-                    var masterBg = settings.Element("masterBackground");
-                    if (masterBg != null)
+                    string? masterBgColor = settings.Attribute("masterBackgroundColor")?.Value;
+                    if (masterBgColor != null)
                     {
-                        var master = ppt.Masters[0];
-                        master.Background.Fill.FillType = FillType.Solid;
-                        master.Background.Fill.SolidFill.Color = ParseColor(masterBg);
+                        IMasterSlide slideMaster = presentation.Masters[0];
+                        slideMaster.Background.Fill.FillType = FillType.Solid;
+                        slideMaster.Background.Fill.SolidFill.Color = ColorHelper.ParseColor(masterBgColor);
                     }
                 }
 
-                foreach (var slideEl in doc.Root.Elements("slide"))
-                {
-                    var slide = ppt.Slides.Add(SlideLayoutType.Blank);
+                XElement? footerElement = document.Element("footer");
 
-                    var bg = slideEl.Element("background");
-                    if (bg != null)
+
+                foreach (XElement slideElement in document.Elements("slide"))
+                {
+                    SlideLayoutType slideLayoutType = Enum.TryParse(slideElement.Attribute("layout")?.Value, true, out SlideLayoutType lt) ? lt : SlideLayoutType.TitleAndContent;
+
+                    ISlide slide = presentation.Slides.Add(slideLayoutType);
+
+                    LayoutHelper.SetLayoutContent(slide, slideElement, slideLayoutType);
+
+
+                    if (footerElement != null)
+                    {
+                        HeaderFooterHelper.SetHeaderFooter(document, slide);
+                    }
+
+                    string? slideBackgroundColor = slideElement.Attribute("backgroundColor")?.Value;
+                    if (slideBackgroundColor != null)
                     {
                         slide.Background.Fill.FillType = FillType.Solid;
-                        slide.Background.Fill.SolidFill.Color = ParseColor(bg);
+                        slide.Background.Fill.SolidFill.Color = ColorHelper.ParseColor(slideBackgroundColor);
                     }
 
-                    var title = slideEl.Element("title");
-                    if (title != null)
+                    IEnumerable<XElement> chartElements = slideElement.Elements("chart");
+                    if (chartElements != null)
                     {
-                        AddTextBox(slide, title.Value,
-                            (int?)title.Attribute("x") ?? 50,
-                            (int?)title.Attribute("y") ?? 50,
-                            (int?)title.Attribute("w") ?? 600,
-                            (int?)title.Attribute("h") ?? 50,
-                            bold: true, fontSize: 24);
-                    }
-
-                    var body = slideEl.Element("body");
-                    if (body != null)
-                    {
-                        AddTextBox(slide, body.Value,
-                            (int?)body.Attribute("x") ?? 50,
-                            (int?)body.Attribute("y") ?? 120,
-                            (int?)body.Attribute("w") ?? 600,
-                            (int?)body.Attribute("h") ?? 300);
-                    }
-
-                    var footer = slideEl.Element("footer");
-                    if (footer != null)
-                    {
-                        AddTextBox(slide, footer.Value,
-                            (int?)footer.Attribute("x") ?? 50,
-                            (int?)footer.Attribute("y") ?? 680,
-                            (int?)footer.Attribute("w") ?? 600,
-                            (int?)footer.Attribute("h") ?? 30,
-                            alignment: HorizontalAlignmentType.Center, fontSize: 12);
-                    }
-
-                    var table = slideEl.Element("table");
-                    if (table != null)
-                        AddTable(slide, table);
-
-                    //var videoEl = slides[i].Element("video");
-                    //if (videoEl != null)
-                    //    AddVideoPlaceholderImage(pres.Slides[i], videoEl);
-
-
-                    var img = slideEl.Element("img");
-                    if (img != null)
-                        AddImage(slide, img);
-
-                    Action<string, ListType> AddList = (tag, type) =>
-                    {
-                        var el = slideEl.Element(tag);
-                        if (el != null)
+                        foreach (XElement chartElement in chartElements)
                         {
-                            var box = slide.AddTextBox(
-                                (int?)el.Attribute("x") ?? 50,
-                                (int?)el.Attribute("y") ?? 220,
-                                (int?)el.Attribute("w") ?? 600,
-                                (int?)el.Attribute("h") ?? 100
-                            );
-                            foreach (var li in el.Elements("li"))
-                            {
-                                var p = box.TextBody.AddParagraph(li.Value);
-                                p.ListFormat.Type = type;
-                                if (type == ListType.Numbered)
-                                    p.ListFormat.NumberStyle = NumberedListStyle.ArabicPeriod;
-                                p.FirstLineIndent = -20;
-                                p.LeftIndent = 20;
-                            }
+                            ChartHelper.AddChart(slide, chartElement);
                         }
-                    };
-                    AddList("ul", ListType.Bulleted);
-                    AddList("ol", ListType.Numbered);
+                    }
+
+                    IEnumerable<XElement> imageElements = slideElement.Elements("image");
+                    if (imageElements != null)
+                    {
+                        foreach (XElement imgElement in imageElements)
+                        {
+                            ImageHelper.AddImage(slide, imgElement);
+                        }
+                    }
+
+                    IEnumerable<XElement> tableElements = slideElement.Elements("table");
+                    if (tableElements != null)
+                    {
+                        foreach (XElement tableElement in tableElements)
+                        {
+                            TableHelper.AddTable(slide, tableElement);
+                        }
+                    }
+
+                    IEnumerable<XElement> shapeElements = slideElement.Elements("shape");
+                    if (shapeElements != null)
+                    {
+                        foreach (XElement shapeElement in shapeElements)
+                        {
+
+
+                            ShapeHelper.AddShape(shapeElement, slide);
+                        }
+                    }
+
+                    IEnumerable<XElement> listElements = slideElement.Elements("list");
+                    if (listElements != null)
+                    {
+                        foreach (XElement listElement in listElements)
+                        {
+                            ListHelper.AddList(listElement, slide);
+                        }
+                    }
+
+                    IEnumerable<XElement> textboxElements = slideElement.Elements("textbox");
+                    if (textboxElements != null)
+                    {
+                        foreach (XElement textboxElement in textboxElements)
+                        {
+                            TextBoxHelper.AddTextBox(textboxElement, slide);
+                        }
+                    }
                 }
 
-                using var ms = new MemoryStream();
-                ppt.Save(ms);
+                using MemoryStream ms = new MemoryStream();
+                presentation.Save(ms);
                 return ms.ToArray();
             }
             catch (Exception ex)
@@ -136,111 +139,45 @@ namespace PowerPointLibrary
             }
         }
 
+
+
+
         public static byte[] ConvertToPdf(string xmlContent)
         {
             byte[] pptxBytes = CreatePresentationFromXml(xmlContent);
-            using var ms = new MemoryStream(pptxBytes);
+            using MemoryStream ms = new MemoryStream(pptxBytes);
 
-            #if NET48
-                        using var pres = Presentation.Open(ms);
-                        // .NET 4.8 için tam nitelikli yol
-                        using var pdf = global::Syncfusion.PresentationToPdfConverter.PresentationToPdfConverter.Convert(pres);
-            #else // NET9_0
-                using var pres = Presentation.Open(ms);
-                // .NET 9 için yeni API
-                var converter = new global::Syncfusion.Presentation.PresentationToPdfConverter(pres);
-                using var pdf = converter.Convert();
-            #endif
-
-            using var outMs = new MemoryStream();
-            pdf.Save(outMs);
-            return outMs.ToArray();
-        }
-
-        #region Yardımcı Metodlar
-
-        private static ColorObject ParseColor(XElement element)
-        {
-            var r = byte.TryParse((string)element.Attribute("r"), out var rVal) ? rVal : (byte)255;
-            var g = byte.TryParse((string)element.Attribute("g"), out var gVal) ? gVal : (byte)255;
-            var b = byte.TryParse((string)element.Attribute("b"), out var bVal) ? bVal : (byte)255;
-
-            return (ColorObject)ColorObject.FromArgb(r, g, b);
-        }
-
-
-        private static void AddTextBox(ISlide slide, string text, int x, int y, int width, int height,
-            bool bold = false, int fontSize = 12, HorizontalAlignmentType alignment = HorizontalAlignmentType.Left)
-        {
-            var textBox = slide.AddTextBox(x, y, width, height);
-            var paragraph = textBox.TextBody.AddParagraph(text);
-            paragraph.HorizontalAlignment = alignment;
-            paragraph.Font.Bold = bold;
-            paragraph.Font.FontSize = fontSize;
-        }
-
-        private static void AddTable(ISlide slide, XElement tableElement)
-        {
-            var rows = tableElement.Elements("tr").ToList();
-            if (rows.Count == 0) return;
-
-            int rowCount = rows.Count;
-            int colCount = rows[0].Elements("td").Count();
-
-            var table = slide.Shapes.AddTable(rowCount, colCount,
-                (int?)tableElement.Attribute("x") ?? 50,
-                (int?)tableElement.Attribute("y") ?? 400,
-                (int?)tableElement.Attribute("w") ?? 600,
-                rowCount * 30 + 20);
-
-            for (int r = 0; r < rowCount; r++)
+#if NET48
+            using (IPresentation presentation = Presentation.Open(ms))
             {
-                var cells = rows[r].Elements("td").ToList();
-                for (int c = 0; c < colCount; c++)
+                Syncfusion.OfficeChartToImageConverter.ChartToImageConverter chartToImageConverter = new Syncfusion.OfficeChartToImageConverter.ChartToImageConverter();
+
+                presentation.ChartToImageConverter = chartToImageConverter;
+
+                PresentationToPdfConverterSettings settings = new PresentationToPdfConverterSettings();
+                settings.ShowHiddenSlides = false;
+
+                using (PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation, settings))
                 {
-                    table.Rows[r].Cells[c].TextBody.AddParagraph(c < cells.Count ? cells[c].Value : "");
+                    using MemoryStream outMs = new MemoryStream();
+                    pdfDocument.Save(outMs);
+                    return outMs.ToArray();
                 }
             }
-        }
+#elif NET9_0
+           using (IPresentation presentation = Presentation.Open(ms))
+           {
+               PdfDocument pdfDocument = PresentationToPdfConverter.Convert(presentation);
+
+               using MemoryStream outMs = new MemoryStream();
+               pdfDocument.Save(outMs);
+               return outMs.ToArray();
+           }
+#else
+           throw new PlatformNotSupportedException("Bu platform desteklenmiyor.");
+#endif
+        }
 
 
-        private static void AddImage(ISlide slide, XElement imgElement)
-        {
-            var imagePath = imgElement.Attribute("src")?.Value ?? imgElement.Attribute("url")?.Value;
-            if (string.IsNullOrWhiteSpace(imagePath)) return;
-
-            try
-            {
-                byte[] imageBytes;
-
-                if (imagePath.StartsWith("http", StringComparison.OrdinalIgnoreCase))
-                {
-                    using var webClient = new WebClient();
-                    imageBytes = webClient.DownloadData(imagePath);
-                }
-                else if (File.Exists(imagePath))
-                {
-                    imageBytes = File.ReadAllBytes(imagePath);
-                }
-                else
-                {
-                    return;
-                }
-
-                using var stream = new MemoryStream(imageBytes);
-                slide.Pictures.AddPicture(
-                    stream,
-                    (int?)imgElement.Attribute("x") ?? 50,
-                    (int?)imgElement.Attribute("y") ?? 200,
-                    (int?)imgElement.Attribute("w") ?? 300,
-                    (int?)imgElement.Attribute("h") ?? 200);
-            }
-            catch
-            {
-                // Hata durumunda sessizce devam et
-            }
-        }
-
-        #endregion
     }
 }
